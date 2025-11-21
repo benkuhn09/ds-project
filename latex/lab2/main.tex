@@ -83,7 +83,7 @@
         \includegraphics[width=\linewidth]{traffic_accidents_records_variables.png}
     \end{subfigure}
     \hfill
-    \begin{subfigure}[t]{0.48\textwidth}
+    \begin{subfigure}[t]{0.44\textwidth}
         \includegraphics[width=\linewidth]{flight_cancellations_records_variables.png}
     \end{subfigure}
     \caption{Nr Records x Nr variables for Traffic Accident Data (left) and Flight Cancellation Data (right)}
@@ -103,11 +103,11 @@
 
 \begin{figure}[H]
     \centering
-    \begin{subfigure}[t]{0.48\textwidth}
+    \begin{subfigure}[t]{0.36\textwidth}
         \includegraphics[width=\linewidth]{traffic_accidents_mv.png}
     \end{subfigure}
     \hfill
-    \begin{subfigure}[t]{0.48\textwidth}
+    \begin{subfigure}[t]{0.6\textwidth}
         \includegraphics[width=\linewidth]{flight_cancellations_mv.png}
     \end{subfigure}
     \caption{Nr missing values for Traffic Accident Data (left) and Flight Cancellation Data (right)}
@@ -118,23 +118,23 @@
 
 \begin{figure}[H]
 \centering
-    \begin{subfigure}[t]{0.48\textwidth}
+    \begin{subfigure}[t]{0.36\textwidth}
         \includegraphics[width=\linewidth]{traffic_accidents_global_boxplot.png}
     \end{subfigure}
     \hfill
-    \begin{subfigure}[t]{0.48\textwidth}
+    \begin{subfigure}[t]{0.6\textwidth}
         \includegraphics[width=\linewidth]{flight_cancellations_global_boxplot.png}
     \end{subfigure}
     \caption{Global boxplots for Traffic Accident Data (left) and Flight Cancellation Data (right)}
 \end{figure}
 
 \begin{figure}[H]
-\centering\includegraphics[width=\columnwidth]{traffic_accidents_single_boxplots.png}
+\centering\includegraphics[width=0.8\columnwidth]{traffic_accidents_single_boxplots.png}
 \caption{Single variables boxplots for Traffic Accident Data}
 \end{figure}
 
 \begin{figure}[H]
-\centering\includegraphics[width=0.25\columnwidth]{flight_cancellations_single_boxplots.png}
+\centering\includegraphics[width=0.3\columnwidth]{flight_cancellations_single_boxplots.png}
 \caption{Single variables boxplots for Flight Cancellation Data}
 \end{figure}
 
@@ -145,61 +145,66 @@
 
 \begin{figure}[H]
 \centering\includegraphics[width=0.8\columnwidth]{traffic_accidents_histograms_symbolic.png}
-\caption{Histograms for Traffic Accident Data - symbolic} %(with distributions is enough)
+\caption{Histograms for Traffic Accident Data - symbolic} 
 \end{figure}
 
 \begin{figure}[H]
-\centering\includegraphics[width=0.9\columnwidth]{flight_cancellations_histogram_numeric_distribution.png}
+\centering\includegraphics[width=0.3\columnwidth]{flight_cancellations_histogram_numeric_distribution.png}
 \caption{Histograms for Flight Cancellation Data - numeric} %(with distributions is enough)
 \end{figure}
 
 \begin{figure}[H]
-\centering\includegraphics[width=0.8\columnwidth]{flight_cancellations_histograms_symbolic.png}
-\caption{Histograms for Flight Cancellation Data - symbolic} %(with distributions is enough)
+\centering\includegraphics[width=0.6\columnwidth]{flight_cancellations_histograms_symbolic.png}
+\caption{Histograms for Flight Cancellation Data - symbolic} 
 \end{figure}
 
 \begin{figure}[H]
+\centering
 \subfloat[standard]{%
-  \centering\includegraphics[width=\columnwidth]{traffic_accidents_outliers_standard.png}%
+  \centering\includegraphics[width=0.7\columnwidth]{traffic_accidents_outliers_standard.png}%
 }
 
 \subfloat[tuned]{%
-  \centering\includegraphics[width=\columnwidth]{traffic_accidents_outliers_tuned.png}%
+  \centering\includegraphics[width=0.7\columnwidth]{traffic_accidents_outliers_tuned.png}%
 }
 \caption{Outliers study Traffic Accident Data}
 \end{figure}
 
 \begin{figure}[H]
+\centering
 \subfloat[standard]{%
-  \centering\includegraphics[width=\columnwidth]{flight_cancellations_outliers_standard.png}%
+  \centering\includegraphics[width=0.95\columnwidth]{flight_cancellations_outliers_standard.png}%
 }
 
 \subfloat[tuned]{%
-  \centering\includegraphics[width=\columnwidth]{flight_cancellations_outliers_tuned.png}%
+  \centering\includegraphics[width=0.95\columnwidth]{flight_cancellations_outliers_tuned.png}%
 }
 \caption{Outliers study Flight Cancellation Data}
 \end{figure}
 
 \begin{figure}[H]
-\centering\includegraphics[scale=0.95]{traffic_accidents_class_distribution.png}
-\caption{Class distribution for Traffic Accident Data}
-\end{figure}
-
-\begin{figure}[H]
-\centering\includegraphics[scale=0.95]{flight_cancellations_class_distribution.png}
-\caption{Class distribution for Flight Cancellation Data}
+\centering
+    \begin{subfigure}[t]{0.48\textwidth}
+    	\centering\includegraphics[width=0.8\columnwidth]{traffic_accidents_class_distribution.png}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[t]{0.48\textwidth}
+        \vspace{-5.7cm}
+        \centering\includegraphics[width=0.8\columnwidth]{flight_cancellations_class_distribution.png}
+    \end{subfigure}
+    \caption{Class distribution for Traffic Accident Data (left) and Flight Cancellation Data (right)}
 \end{figure}
 
 \subsection*{\textit{Data Granularity}}
 % Shall contain all relevant information and charts respecting to the data granularity perspective, such as the impact of different granularities considered for each variable. May present additional taxonomies if needed.
 
 \begin{figure}[H]
-\centering\includegraphics[width=\columnwidth]{traffic_accidents_granularity_crash_date.png}
+\centering\includegraphics[width=0.9\columnwidth]{traffic_accidents_granularity_crash_date.png}
 \caption{Granularity analysis for Traffic Accident Data}
 \end{figure}
 
 \begin{figure}[H]
-\centering\includegraphics[width=\columnwidth]{flight_cancellations_granularity_FlightDate.png}
+\centering\includegraphics[width=0.9\columnwidth]{flight_cancellations_granularity_FlightDate.png}
 \caption{Granularity analysis for Flight Cancellation Data}
 \end{figure}
 
@@ -232,12 +237,12 @@ LINK
 
 
 \begin{figure}[H]
-\centering\includegraphics[scale=0.95]{traffic_accidents_correlation_analysis.png}
+\centering\includegraphics[width=0.7\columnwidth]{traffic_accidents_correlation_analysis.png}
 \caption{Correlation analysis for Traffic Accident Data}
 \end{figure}
 
 \begin{figure}[H]
-\centering\includegraphics[scale=0.95]{flight_cancellations_correlation_analysis.png}
+\centering\includegraphics[width=0.7\columnwidth]{flight_cancellations_correlation_analysis.png}
 \caption{Correlation analysis for Flight Cancellation Data}
 \end{figure}
 

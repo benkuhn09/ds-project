@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.27 (TeX Live 2025) (preloaded format=pdflatex 2025.10.2)  21 NOV 2025 11:58
+This is pdfTeX, Version 3.141592653-2.6-1.40.27 (TeX Live 2025) (preloaded format=pdflatex 2025.10.2)  21 NOV 2025 13:08
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -400,7 +400,7 @@ cancellations_records_variables.png>
 Package pdftex.def Info: ../../classification/ds2_flight_cancellation/charts/la
 b2_profiling/flight_cancellations_records_variables.png  used on input line 87.
 
-(pdftex.def)             Requested size: 240.23016pt x 167.69926pt.
+(pdftex.def)             Requested size: 220.21417pt x 153.72607pt.
 <../../classification/ds1_traffic_accidents/charts/lab2_profiling/traffic_accid
 ents_variable_types.png, id=4, 250.0542pt x 165.2574pt>
 File: ../../classification/ds1_traffic_accidents/charts/lab2_profiling/traffic_
@@ -441,7 +441,7 @@ accidents_mv.png Graphic file (type png)
 ccidents_mv.png>
 Package pdftex.def Info: ../../classification/ds1_traffic_accidents/charts/lab2
 _profiling/traffic_accidents_mv.png  used on input line 107.
-(pdftex.def)             Requested size: 240.23016pt x 179.31856pt.
+(pdftex.def)             Requested size: 180.17453pt x 134.48969pt.
 <../../classification/ds2_flight_cancellation/charts/lab2_profiling/flight_canc
 ellations_mv.png, id=22, 723.1818pt x 313.17pt>
 File: ../../classification/ds2_flight_cancellation/charts/lab2_profiling/flight
@@ -450,7 +450,7 @@ _cancellations_mv.png Graphic file (type png)
 cancellations_mv.png>
 Package pdftex.def Info: ../../classification/ds2_flight_cancellation/charts/la
 b2_profiling/flight_cancellations_mv.png  used on input line 111.
-(pdftex.def)             Requested size: 240.23016pt x 104.02974pt.
+(pdftex.def)             Requested size: 300.29344pt x 130.04436pt.
 <../../classification/ds1_traffic_accidents/charts/lab2_profiling/traffic_accid
 ents_global_boxplot.png, id=23, 474.0912pt x 306.4248pt>
 File: ../../classification/ds1_traffic_accidents/charts/lab2_profiling/traffic_
@@ -459,7 +459,7 @@ accidents_global_boxplot.png Graphic file (type png)
 ccidents_global_boxplot.png>
 Package pdftex.def Info: ../../classification/ds1_traffic_accidents/charts/lab2
 _profiling/traffic_accidents_global_boxplot.png  used on input line 122.
-(pdftex.def)             Requested size: 240.23016pt x 155.27399pt.
+(pdftex.def)             Requested size: 180.17453pt x 116.45665pt.
 <../../classification/ds2_flight_cancellation/charts/lab2_profiling/flight_canc
 ellations_global_boxplot.png, id=24, 1160.6562pt x 433.1382pt>
 File: ../../classification/ds2_flight_cancellation/charts/lab2_profiling/flight
@@ -468,7 +468,7 @@ _cancellations_global_boxplot.png Graphic file (type png)
 cancellations_global_boxplot.png>
 Package pdftex.def Info: ../../classification/ds2_flight_cancellation/charts/la
 b2_profiling/flight_cancellations_global_boxplot.png  used on input line 126.
-(pdftex.def)             Requested size: 240.23016pt x 89.64648pt.
+(pdftex.def)             Requested size: 300.29344pt x 112.06471pt.
 <../../classification/ds1_traffic_accidents/charts/lab2_profiling/traffic_accid
 ents_single_boxplots.png, id=25, 702.9462pt x 927.9468pt>
 File: ../../classification/ds1_traffic_accidents/charts/lab2_profiling/traffic_
@@ -477,7 +477,7 @@ accidents_single_boxplots.png Graphic file (type png)
 ccidents_single_boxplots.png>
 Package pdftex.def Info: ../../classification/ds1_traffic_accidents/charts/lab2
 _profiling/traffic_accidents_single_boxplots.png  used on input line 132.
-(pdftex.def)             Requested size: 500.484pt x 660.67339pt.
+(pdftex.def)             Requested size: 400.38872pt x 528.53871pt.
 
 
 [2 <../../classification/ds1_traffic_accidents/charts/lab2_profiling/traffic_ac
@@ -488,21 +488,19 @@ lassification/ds2_flight_cancellation/charts/lab2_profiling/flight_cancellation
 s_mv.png> <../../classification/ds1_traffic_accidents/charts/lab2_profiling/tra
 ffic_accidents_global_boxplot.png> <../../classification/ds2_flight_cancellatio
 n/charts/lab2_profiling/flight_cancellations_global_boxplot.png>]
-Overfull \vbox (29.96716pt too high) has occurred while \output is active []
-
-
-
-[3 <../../classification/ds1_traffic_accidents/charts/lab2_profiling/traffic_ac
-cidents_single_boxplots.png>]
 <../../classification/ds2_flight_cancellation/charts/lab2_profiling/flight_canc
-ellations_single_boxplots.png, id=39, 711.6186pt x 2931.2712pt>
+ellations_single_boxplots.png, id=35, 711.6186pt x 2931.2712pt>
 File: ../../classification/ds2_flight_cancellation/charts/lab2_profiling/flight
 _cancellations_single_boxplots.png Graphic file (type png)
 <use ../../classification/ds2_flight_cancellation/charts/lab2_profiling/flight_
 cancellations_single_boxplots.png>
 Package pdftex.def Info: ../../classification/ds2_flight_cancellation/charts/la
 b2_profiling/flight_cancellations_single_boxplots.png  used on input line 137.
-(pdftex.def)             Requested size: 125.12099pt x 515.39545pt.
+(pdftex.def)             Requested size: 150.14671pt x 618.4477pt.
+
+
+[3 <../../classification/ds1_traffic_accidents/charts/lab2_profiling/traffic_ac
+cidents_single_boxplots.png>]
 <../../classification/ds1_traffic_accidents/charts/lab2_profiling/traffic_accid
 ents_histogram_numeric_distribution.png, id=40, 867.24pt x 1156.32pt>
 File: ../../classification/ds1_traffic_accidents/charts/lab2_profiling/traffic_
@@ -545,9 +543,9 @@ cancellations_histogram_numeric_distribution.png>
 Package pdftex.def Info: ../../classification/ds2_flight_cancellation/charts/la
 b2_profiling/flight_cancellations_histogram_numeric_distribution.png  used on i
 nput line 152.
-(pdftex.def)             Requested size: 450.43253pt x 1951.89839pt.
+(pdftex.def)             Requested size: 150.14671pt x 650.61368pt.
 
-Overfull \vbox (1321.19217pt too high) has occurred while \output is active []
+Overfull \vbox (19.90746pt too high) has occurred while \output is active []
 
 
 
@@ -562,9 +560,9 @@ cancellations_histograms_symbolic.png>
 Package pdftex.def Info: ../../classification/ds2_flight_cancellation/charts/la
 b2_profiling/flight_cancellations_histograms_symbolic.png  used on input line 1
 57.
-(pdftex.def)             Requested size: 400.38872pt x 852.53204pt.
+(pdftex.def)             Requested size: 300.29344pt x 639.39903pt.
 
-Overfull \vbox (221.82582pt too high) has occurred while \output is active []
+Overfull \vbox (8.69281pt too high) has occurred while \output is active []
 
 
 
@@ -577,8 +575,8 @@ accidents_outliers_standard.png Graphic file (type png)
 <use ../../classification/ds1_traffic_accidents/charts/lab2_profiling/traffic_a
 ccidents_outliers_standard.png>
 Package pdftex.def Info: ../../classification/ds1_traffic_accidents/charts/lab2
-_profiling/traffic_accidents_outliers_standard.png  used on input line 164.
-(pdftex.def)             Requested size: 500.484pt x 141.93295pt.
+_profiling/traffic_accidents_outliers_standard.png  used on input line 165.
+(pdftex.def)             Requested size: 350.33727pt x 99.35225pt.
 <../../classification/ds1_traffic_accidents/charts/lab2_profiling/traffic_accid
 ents_outliers_tuned.png, id=66, 942.8826pt x 267.399pt>
 File: ../../classification/ds1_traffic_accidents/charts/lab2_profiling/traffic_
@@ -586,8 +584,8 @@ accidents_outliers_tuned.png Graphic file (type png)
 <use ../../classification/ds1_traffic_accidents/charts/lab2_profiling/traffic_a
 ccidents_outliers_tuned.png>
 Package pdftex.def Info: ../../classification/ds1_traffic_accidents/charts/lab2
-_profiling/traffic_accidents_outliers_tuned.png  used on input line 168.
-(pdftex.def)             Requested size: 500.484pt x 141.93295pt.
+_profiling/traffic_accidents_outliers_tuned.png  used on input line 169.
+(pdftex.def)             Requested size: 350.33727pt x 99.35225pt.
 <../../classification/ds2_flight_cancellation/charts/lab2_profiling/flight_canc
 ellations_outliers_standard.png, id=67, 1155.8382pt x 378.6948pt>
 File: ../../classification/ds2_flight_cancellation/charts/lab2_profiling/flight
@@ -595,9 +593,9 @@ _cancellations_outliers_standard.png Graphic file (type png)
 <use ../../classification/ds2_flight_cancellation/charts/lab2_profiling/flight_
 cancellations_outliers_standard.png>
 Package pdftex.def Info: ../../classification/ds2_flight_cancellation/charts/la
-b2_profiling/flight_cancellations_outliers_standard.png  used on input line 175
+b2_profiling/flight_cancellations_outliers_standard.png  used on input line 177
 .
-(pdftex.def)             Requested size: 500.484pt x 163.9797pt.
+(pdftex.def)             Requested size: 475.45825pt x 155.78014pt.
 <../../classification/ds2_flight_cancellation/charts/lab2_profiling/flight_canc
 ellations_outliers_tuned.png, id=68, 1166.9196pt x 378.6948pt>
 File: ../../classification/ds2_flight_cancellation/charts/lab2_profiling/flight
@@ -605,115 +603,112 @@ _cancellations_outliers_tuned.png Graphic file (type png)
 <use ../../classification/ds2_flight_cancellation/charts/lab2_profiling/flight_
 cancellations_outliers_tuned.png>
 Package pdftex.def Info: ../../classification/ds2_flight_cancellation/charts/la
-b2_profiling/flight_cancellations_outliers_tuned.png  used on input line 179.
-(pdftex.def)             Requested size: 500.484pt x 162.41954pt.
-
-
-[9 <../../classification/ds1_traffic_accidents/charts/lab2_profiling/traffic_ac
-cidents_outliers_standard.png> <../../classification/ds1_traffic_accidents/char
-ts/lab2_profiling/traffic_accidents_outliers_tuned.png>]
+b2_profiling/flight_cancellations_outliers_tuned.png  used on input line 181.
+(pdftex.def)             Requested size: 475.45825pt x 154.29509pt.
 <../../classification/ds1_traffic_accidents/charts/lab2_profiling/traffic_accid
-ents_class_distribution.png, id=75, 267.8808pt x 224.5188pt>
+ents_class_distribution.png, id=69, 267.8808pt x 224.5188pt>
 File: ../../classification/ds1_traffic_accidents/charts/lab2_profiling/traffic_
 accidents_class_distribution.png Graphic file (type png)
 <use ../../classification/ds1_traffic_accidents/charts/lab2_profiling/traffic_a
 ccidents_class_distribution.png>
 Package pdftex.def Info: ../../classification/ds1_traffic_accidents/charts/lab2
-_profiling/traffic_accidents_class_distribution.png  used on input line 184.
-(pdftex.def)             Requested size: 254.4853pt x 213.29163pt.
+_profiling/traffic_accidents_class_distribution.png  used on input line 188.
+(pdftex.def)             Requested size: 192.18486pt x 161.07785pt.
 <../../classification/ds2_flight_cancellation/charts/lab2_profiling/flight_canc
-ellations_class_distribution.png, id=76, 245.718pt x 157.5486pt>
+ellations_class_distribution.png, id=70, 245.718pt x 157.5486pt>
 File: ../../classification/ds2_flight_cancellation/charts/lab2_profiling/flight
 _cancellations_class_distribution.png Graphic file (type png)
 <use ../../classification/ds2_flight_cancellation/charts/lab2_profiling/flight_
 cancellations_class_distribution.png>
 Package pdftex.def Info: ../../classification/ds2_flight_cancellation/charts/la
-b2_profiling/flight_cancellations_class_distribution.png  used on input line 18
-9.
-(pdftex.def)             Requested size: 233.43077pt x 149.6703pt.
+b2_profiling/flight_cancellations_class_distribution.png  used on input line 19
+3.
+(pdftex.def)             Requested size: 192.18486pt x 123.23117pt.
 
 
-[10 <../../classification/ds2_flight_cancellation/charts/lab2_profiling/flight_
-cancellations_outliers_standard.png> <../../classification/ds2_flight_cancellat
-ion/charts/lab2_profiling/flight_cancellations_outliers_tuned.png> <../../class
-ification/ds1_traffic_accidents/charts/lab2_profiling/traffic_accidents_class_d
-istribution.png>]
+[9 <../../classification/ds1_traffic_accidents/charts/lab2_profiling/traffic_ac
+cidents_outliers_standard.png> <../../classification/ds1_traffic_accidents/char
+ts/lab2_profiling/traffic_accidents_outliers_tuned.png> <../../classification/d
+s2_flight_cancellation/charts/lab2_profiling/flight_cancellations_outliers_stan
+dard.png> <../../classification/ds2_flight_cancellation/charts/lab2_profiling/f
+light_cancellations_outliers_tuned.png>]
 <../../classification/ds1_traffic_accidents/charts/lab2_profiling/traffic_accid
-ents_granularity_crash_date.png, id=83, 950.5914pt x 283.7802pt>
+ents_granularity_crash_date.png, id=79, 942.8826pt x 292.4526pt>
 File: ../../classification/ds1_traffic_accidents/charts/lab2_profiling/traffic_
 accidents_granularity_crash_date.png Graphic file (type png)
 <use ../../classification/ds1_traffic_accidents/charts/lab2_profiling/traffic_a
 ccidents_granularity_crash_date.png>
 Package pdftex.def Info: ../../classification/ds1_traffic_accidents/charts/lab2
-_profiling/traffic_accidents_granularity_crash_date.png  used on input line 197
+_profiling/traffic_accidents_granularity_crash_date.png  used on input line 202
 .
-(pdftex.def)             Requested size: 500.484pt x 149.41118pt.
+(pdftex.def)             Requested size: 450.43253pt x 139.71074pt.
 <../../classification/ds2_flight_cancellation/charts/lab2_profiling/flight_canc
-ellations_granularity_FlightDate.png, id=84, 931.8012pt x 292.4526pt>
+ellations_granularity_FlightDate.png, id=80, 931.8012pt x 292.4526pt>
 File: ../../classification/ds2_flight_cancellation/charts/lab2_profiling/flight
 _cancellations_granularity_FlightDate.png Graphic file (type png)
 <use ../../classification/ds2_flight_cancellation/charts/lab2_profiling/flight_
 cancellations_granularity_FlightDate.png>
 Package pdftex.def Info: ../../classification/ds2_flight_cancellation/charts/la
 b2_profiling/flight_cancellations_granularity_FlightDate.png  used on input lin
-e 202.
-(pdftex.def)             Requested size: 500.484pt x 157.0831pt.
+e 207.
+(pdftex.def)             Requested size: 450.43253pt x 141.37077pt.
 <../../classification/ds1_traffic_accidents/charts/lab2_profiling/traffic_accid
-ents_sparsity_study.png, id=85, 6648.84pt x 6648.84pt>
+ents_sparsity_study.png, id=81, 6648.84pt x 6648.84pt>
 File: ../../classification/ds1_traffic_accidents/charts/lab2_profiling/traffic_
 accidents_sparsity_study.png Graphic file (type png)
 <use ../../classification/ds1_traffic_accidents/charts/lab2_profiling/traffic_a
 ccidents_sparsity_study.png>
 Package pdftex.def Info: ../../classification/ds1_traffic_accidents/charts/lab2
-_profiling/traffic_accidents_sparsity_study.png  used on input line 210.
+_profiling/traffic_accidents_sparsity_study.png  used on input line 215.
 (pdftex.def)             Requested size: 500.484pt x 500.46765pt.
 
 
-[11 <../../classification/ds2_flight_cancellation/charts/lab2_profiling/flight_
-cancellations_class_distribution.png> <../../classification/ds1_traffic_acciden
-ts/charts/lab2_profiling/traffic_accidents_granularity_crash_date.png> <../../c
-lassification/ds2_flight_cancellation/charts/lab2_profiling/flight_cancellation
-s_granularity_FlightDate.png>]
+[10 <../../classification/ds1_traffic_accidents/charts/lab2_profiling/traffic_a
+ccidents_class_distribution.png> <../../classification/ds2_flight_cancellation/
+charts/lab2_profiling/flight_cancellations_class_distribution.png> <../../class
+ification/ds1_traffic_accidents/charts/lab2_profiling/traffic_accidents_granula
+rity_crash_date.png> <../../classification/ds2_flight_cancellation/charts/lab2_
+profiling/flight_cancellations_granularity_FlightDate.png>]
 <../../classification/ds1_traffic_accidents/charts/lab2_profiling/traffic_accid
-ents_sparsity_per_class_study.png, id=92, 6648.84pt x 6648.84pt>
+ents_sparsity_per_class_study.png, id=89, 6648.84pt x 6648.84pt>
 File: ../../classification/ds1_traffic_accidents/charts/lab2_profiling/traffic_
 accidents_sparsity_per_class_study.png Graphic file (type png)
 <use ../../classification/ds1_traffic_accidents/charts/lab2_profiling/traffic_a
 ccidents_sparsity_per_class_study.png>
 Package pdftex.def Info: ../../classification/ds1_traffic_accidents/charts/lab2
 _profiling/traffic_accidents_sparsity_per_class_study.png  used on input line 2
-15.
+20.
 (pdftex.def)             Requested size: 500.484pt x 500.46765pt.
 
 
-[12 <../../classification/ds1_traffic_accidents/charts/lab2_profiling/traffic_a
+[11 <../../classification/ds1_traffic_accidents/charts/lab2_profiling/traffic_a
 ccidents_sparsity_study.png>]
 <../../classification/ds1_traffic_accidents/charts/lab2_profiling/traffic_accid
-ents_correlation_analysis.png, id=97, 334.3692pt x 274.626pt>
+ents_correlation_analysis.png, id=94, 334.3692pt x 274.626pt>
 File: ../../classification/ds1_traffic_accidents/charts/lab2_profiling/traffic_
 accidents_correlation_analysis.png Graphic file (type png)
 <use ../../classification/ds1_traffic_accidents/charts/lab2_profiling/traffic_a
 ccidents_correlation_analysis.png>
 Package pdftex.def Info: ../../classification/ds1_traffic_accidents/charts/lab2
-_profiling/traffic_accidents_correlation_analysis.png  used on input line 235.
-(pdftex.def)             Requested size: 317.64893pt x 260.8932pt.
+_profiling/traffic_accidents_correlation_analysis.png  used on input line 240.
+(pdftex.def)             Requested size: 350.33727pt x 287.75818pt.
 
 
-[13 <../../classification/ds1_traffic_accidents/charts/lab2_profiling/traffic_a
+[12 <../../classification/ds1_traffic_accidents/charts/lab2_profiling/traffic_a
 ccidents_sparsity_per_class_study.png>]
 <../../classification/ds2_flight_cancellation/charts/lab2_profiling/flight_canc
-ellations_correlation_analysis.png, id=103, 345.9324pt x 283.7802pt>
+ellations_correlation_analysis.png, id=99, 345.9324pt x 283.7802pt>
 File: ../../classification/ds2_flight_cancellation/charts/lab2_profiling/flight
 _cancellations_correlation_analysis.png Graphic file (type png)
 <use ../../classification/ds2_flight_cancellation/charts/lab2_profiling/flight_
 cancellations_correlation_analysis.png>
 Package pdftex.def Info: ../../classification/ds2_flight_cancellation/charts/la
 b2_profiling/flight_cancellations_correlation_analysis.png  used on input line 
-240.
-(pdftex.def)             Requested size: 328.63391pt x 269.58965pt.
+245.
+(pdftex.def)             Requested size: 350.33727pt x 287.41246pt.
 
 
-[14 <../../classification/ds1_traffic_accidents/charts/lab2_profiling/traffic_a
+[13 <../../classification/ds1_traffic_accidents/charts/lab2_profiling/traffic_a
 ccidents_correlation_analysis.png> <../../classification/ds2_flight_cancellatio
 n/charts/lab2_profiling/flight_cancellations_correlation_analysis.png>]
 (./main.aux)
@@ -729,7 +724,7 @@ Here is how much of TeX's memory you used:
  30056 multiletter control sequences out of 15000+600000
  572129 words of font info for 62 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 67i,13n,77p,301b,467s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 67i,13n,77p,301b,477s stack positions out of 10000i,1000n,20000p,200000b,200000s
 </usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb>
 </usr/local/texlive/2025/texmf-dist/fonts/type1/public/cm-super/sfso1200.pfb></
 usr/local/texlive/2025/texmf-dist/fonts/type1/public/cm-super/sfss0900.pfb></us
@@ -738,10 +733,10 @@ local/texlive/2025/texmf-dist/fonts/type1/public/cm-super/sfss3583.pfb></usr/lo
 cal/texlive/2025/texmf-dist/fonts/type1/public/cm-super/sfsx1000.pfb></usr/loca
 l/texlive/2025/texmf-dist/fonts/type1/public/cm-super/sfsx1440.pfb></usr/local/
 texlive/2025/texmf-dist/fonts/type1/public/cm-super/sfsx2074.pfb>
-Output written on main.pdf (14 pages, 8347234 bytes).
+Output written on main.pdf (13 pages, 8349060 bytes).
 PDF statistics:
- 145 PDF objects out of 1000 (max. 8388607)
- 59 compressed objects within 1 object stream
+ 142 PDF objects out of 1000 (max. 8388607)
+ 57 compressed objects within 1 object stream
  0 named destinations out of 1000 (max. 500000)
  136 words of extra memory for PDF output out of 10000 (max. 10000000)
 
