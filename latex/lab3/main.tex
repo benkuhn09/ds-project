@@ -1,0 +1,226 @@
+\documentclass[10pt]{extarticle}
+\renewcommand{\arraystretch}{1.5}
+\renewcommand{\baselinestretch}{1.5}
+\usepackage[onehalfspacing]{setspace}
+\setlength{\parindent}{0em}
+\setlength{\parskip}{0.2em}
+\font\myfont=cmr12 at 26pt
+\usepackage{anyfontsize}
+\usepackage{tabularx}
+\usepackage{multirow}
+\pagenumbering{arabic} 
+\usepackage{soul}
+\usepackage{xcolor}
+\usepackage[T1]{fontenc}
+\renewcommand{\familydefault}{\sfdefault}
+\usepackage{blindtext}
+\usepackage{titling}
+\setlength{\droptitle}{-14em}   % This is your set screw
+\usepackage[english]{babel}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{eso-pic}
+\graphicspath{ {../images/} {../../classification/ds1_traffic_accidents/charts/lab2_profiling/} {../../classification/ds2_flight_cancellation/charts/lab2_profiling/}}
+\usepackage{subcaption}
+\usepackage{geometry}
+\usepackage{hyperref}
+\usepackage[section]{placeins}
+\geometry{margin=2cm, bmargin=2cm, tmargin=3cm}
+
+\newcommand{\ctext}[3][RGB]{%
+  \begingroup
+  \definecolor{hlcolor}{#1}{#2}\sethlcolor{hlcolor}%
+  \hl{#3}%
+  \endgroup
+}
+
+
+\begin{document}
+
+
+\AddToShipoutPictureBG*{
+\AtPageUpperLeft{
+\hspace{19.5cm}
+\raisebox{-2.5cm}{\makebox[0pt][r]{\fontsize{36}{1cm}\selectfont DS 2025\par}}}}
+
+\AddToShipoutPictureBG*{
+\AtPageUpperLeft{
+\hspace{6.5cm}
+\raisebox{-3.5cm}{
+\makebox[0pt][r]{ 
+\includegraphics[scale=0.95]{tecnico_logo.jpg}\\[3cm]}}}}
+
+
+\title{{\myfont Data Science Lab 2}}  % Title
+\setlength{\droptitle}{1cm}
+
+\date{\vspace{-9ex}} % Date for the report, skipped and used to adjust height
+\maketitle % Insert the title, author and date
+\begin{center}
+    %\setlength\extrarowheight{7pt}
+    \begin{tabular}{ |l|l l|l| }
+        \hline
+        \multirow{4}{6em}{\textbf{Team nr:} 2} & \textbf{Student 1:} \r{A}mund Grimstad & \textbf{IST nr:} 1116675\\
+        & \textbf{Student 2:} Arthur de Arruda Chau & \textbf{IST nr:} 1116090 \\
+        & \textbf{Student 3:} Benjamin Raymond Kuhn & \textbf{IST nr:} 1115778 \\
+        & \textbf{Student 4:} João Rafael Freitas Lourenço & \textbf{IST nr:} 425699 \\
+        \hline
+    \end{tabular}
+\end{center}
+
+\begin{center}
+	\section*{\fontsize{0.75cm}{1cm}\selectfont CLASSIFICATION - DATA PREPARATION}
+\end{center}
+
+\section{Traffic Accident Data}
+
+\subsection*{\textit{Variables Encoding}}
+% \ctext[RGB]{190,190,190}{Shall contain all relevant information respecting to the transformation of variables. The list of variables under each one of the transformations, shall be presented. If not applied explain the reason for that, based on data characteristics.  \textbf{Shall not exceed 500 characters \textit{for each dataset.}}}
+
+\subsection*{\textit{Missing Value Imputation}}
+% \ctext[RGB]{190,190,190}{Shall contain all relevant information and charts respecting to missing values imputation, such as the choices made and the impact of the different approaches on modelling results. Shall also clearly reveal the approach selected to proceed with the processing. If not applied explain the reason for that, based on data characteristics.  \textbf{Shall not exceed 500 characters.}}
+
+\begin{figure}[H]
+%\centering\includegraphics[scale=0.95]{}
+\caption{Missing values imputation results with different approaches for Traffic Accident Data}
+\end{figure}
+
+\subsection*{\textit{Outliers Treatment}}
+% \ctext[RGB]{190,190,190}{Shall contain all relevant information and charts respecting to outliers imputation, such as the choices made and the impact of the different approaches on modelling results. Shall also clearly reveal the approach selected to proceed with the processing. If not applied explain the reason for that, based on data characteristics.  \textbf{Shall not exceed 500 characters.}}
+
+\begin{figure}[H]
+%\centering\includegraphics[scale=0.95]{}
+\caption{Outliers imputation results with different approaches for Traffic Accident Data}
+\end{figure}
+
+\subsection*{\textit{Scaling}}
+% \ctext[RGB]{190,190,190}{Shall contain all relevant information and charts respecting to scaling transformation, such as the choices made and the impact of the different approaches on modelling results. Shall also clearly reveal the approach selected to proceed with the processing. If not applied explain the reason for that, based on data characteristics.  \textbf{Shall not exceed 200 characters.}}
+
+\begin{figure}[H]
+%\centering\includegraphics[scale=0.95]{}
+\caption{Scaling results with different approaches for Traffic Accident Data}
+\end{figure}
+
+\subsection*{\textit{Balancing}}
+% \ctext[RGB]{190,190,190}{Shall contain all relevant information and charts respecting to balancing transformation, such as the choices made and the impact of the different approaches on modelling results. Shall also clearly reveal the approach selected to proceed with the processing. If not applied explain the reason for that, based on data characteristics.  \textbf{Shall not exceed 500 characters.}}
+
+\begin{figure}[H]
+%\centering\includegraphics[scale=0.95]{}
+\caption{Balancing results with different approaches for Traffic Accident Data}
+\end{figure}
+
+\subsection*{\textit{Feature Selection}}
+% \ctext[RGB]{190,190,190}{Shall contain all relevant information and charts respecting to feature selection based on filtering out redundant (based on correlation) and relevant (based on variation) variables. The different choices and their impact on the modelling results shall be presented and explained. Should also clearly reveal the approach selected to proceed with the processing. All explanations shall be based on data characteristics.  \textbf{Shall not exceed 500 characters.}}
+
+\begin{figure}[H]
+%\centering\includegraphics[scale=0.95]{}
+\caption{Feature selection of redundant variables results with different parameters for Traffic Accident Data}
+\end{figure}
+
+\begin{figure}[H]
+%\centering\includegraphics[scale=0.95]{}
+\caption{Feature selection of relevant variables results with different parameters for Traffic Accident Data (variance study)} 
+\end{figure}
+
+\subsection*{\textit{Feature Extraction (optional)}}
+% \ctext[RGB]{190,190,190}{Shall contain all relevant information and charts respecting to feature extraction, in particular PCA. The different choices and their impact on the modelling results shall be presented and explained.  \textbf{Shall not exceed 200 characters.}}
+
+\begin{figure}[H]
+%\centering\includegraphics[scale=0.95]{}
+\caption{Principal components analysis and feature extraction results for Traffic Accident Data}
+\end{figure}
+
+\subsection*{\textit{Additional Feature Generation (if done)}}
+% \ctext[RGB]{190,190,190}{Shall contain all relevant information and charts respecting to feature generation. The different choices and their impact on the modelling results shall be presented and explained. Shall summarise all variables generated and the formula used to derive them (in a table).  \textbf{Shall not exceed 200 characters.}}
+
+\begin{figure}[H]
+%\centering\includegraphics[scale=0.95]{}
+\caption{Feature generation results for Traffic Accident Data}
+\end{figure}
+
+\subsection*{\textit{Best approach}}
+
+\begin{figure}[H]
+%\centering\includegraphics[scale=0.95]{}
+\caption{Performance and confusion matrix for best approach for Traffic Accident Data}
+\end{figure}
+
+
+
+
+
+\section{Flight Cancellation Data}
+
+\subsection*{\textit{Variables Encoding}}
+% \ctext[RGB]{190,190,190}{Shall contain all relevant information respecting to the transformation of variables. The list of variables under each one of the transformations, shall be presented. If not applied explain the reason for that, based on data characteristics.  \textbf{Shall not exceed 500 characters \textit{for each dataset.}}}
+
+\subsection*{\textit{Missing Value Imputation}}
+% \ctext[RGB]{190,190,190}{Shall contain all relevant information and charts respecting to missing values imputation, such as the choices made and the impact of the different approaches on modelling results. Shall also clearly reveal the approach selected to proceed with the processing. If not applied explain the reason for that, based on data characteristics.  \textbf{Shall not exceed 500 characters.}}
+
+\begin{figure}[H]
+%\centering\includegraphics[scale=0.95]{}
+\caption{Missing values imputation results with different approaches for Flight Cancellation Data}
+\end{figure}
+
+\subsection*{\textit{Outliers Treatment}}
+% \ctext[RGB]{190,190,190}{Shall contain all relevant information and charts respecting to outliers imputation, such as the choices made and the impact of the different approaches on modelling results. Shall also clearly reveal the approach selected to proceed with the processing. If not applied explain the reason for that, based on data characteristics.  \textbf{Shall not exceed 500 characters.}}
+
+\begin{figure}[H]
+%\centering\includegraphics[scale=0.95]{}
+\caption{Outliers imputation results with different approaches for Flight Cancellation Data}
+\end{figure}
+
+\subsection*{\textit{Scaling}}
+% \ctext[RGB]{190,190,190}{Shall contain all relevant information and charts respecting to scaling transformation, such as the choices made and the impact of the different approaches on modelling results. Shall also clearly reveal the approach selected to proceed with the processing. If not applied explain the reason for that, based on data characteristics.  \textbf{Shall not exceed 200 characters.}}
+
+\begin{figure}[H]
+%\centering\includegraphics[scale=0.95]{}
+\caption{Scaling results with different approaches for Flight Cancellation Data}
+\end{figure}
+
+\subsection*{\textit{Balancing}}
+% \ctext[RGB]{190,190,190}{Shall contain all relevant information and charts respecting to balancing transformation, such as the choices made and the impact of the different approaches on modelling results. Shall also clearly reveal the approach selected to proceed with the processing. If not applied explain the reason for that, based on data characteristics.  \textbf{Shall not exceed 500 characters.}}
+
+\begin{figure}[H]
+%\centering\includegraphics[scale=0.95]{}
+\caption{Balancing results with different approaches for Flight Cancellation Data}
+\end{figure}
+
+\subsection*{\textit{Feature Selection}}
+% \ctext[RGB]{190,190,190}{Shall contain all relevant information and charts respecting to feature selection based on filtering out redundant (based on correlation) and relevant (based on variation) variables. The different choices and their impact on the modelling results shall be presented and explained. Should also clearly reveal the approach selected to proceed with the processing. All explanations shall be based on data characteristics.  \textbf{Shall not exceed 500 characters.}}
+
+\begin{figure}[H]
+%\centering\includegraphics[scale=0.95]{}
+\caption{Feature selection of redundant variables results with different parameters for Flight Cancellation Data}
+\end{figure}
+
+\begin{figure}[H]
+%\centering\includegraphics[scale=0.95]{}
+\caption{Feature selection of relevant variables results with different parameters for Flight Cancellation Data (variance study)}
+\end{figure}
+
+\subsection*{\textit{Feature Extraction (optional)}}
+% \ctext[RGB]{190,190,190}{Shall contain all relevant information and charts respecting to feature extraction, in particular PCA. The different choices and their impact on the modelling results shall be presented and explained.  \textbf{Shall not exceed 200 characters.}}
+
+\begin{figure}[H]
+%\centering\includegraphics[scale=0.95]{}
+\caption{Principal components analysis and feature extraction results for Flight Cancellation Data}
+\end{figure}
+
+\subsection*{\textit{Additional Feature Generation (if done)}}
+% \ctext[RGB]{190,190,190}{Shall contain all relevant information and charts respecting to feature generation. The different choices and their impact on the modelling results shall be presented and explained. Shall summarise all variables generated and the formula used to derive them (in a table).  \textbf{Shall not exceed 200 characters.}}
+
+\begin{figure}[H]
+%\centering\includegraphics[scale=0.95]{}
+\caption{Feature generation results for Flight Cancellation Data}
+\end{figure}
+
+\subsection*{\textit{Best approach}}
+
+\begin{figure}[H]
+%\centering\includegraphics[scale=0.95]{}
+\caption{Performance and confusion matrix for best approach for Flight Cancellation Data}
+\end{figure}
+
+
+\end{document}
