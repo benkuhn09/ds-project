@@ -602,7 +602,7 @@ def apply_feature_selection(
 # ---------------------------------------
 
 
-DELTA_IMPROVE: float = 0.001
+DELTA_IMPROVE: float = 0.00001
 
 
 CLASS_EVAL_METRICS: dict[str, Callable] = {
@@ -625,16 +625,19 @@ def run_NB(trnX, trnY, tstX, tstY, metric: str = "accuracy") -> dict[str, float]
     eval: dict[str, float] = {}
 
     for clf in estimators:
+        print(f"Running {clf}...")
         try:
             estimators[clf].fit(trnX, trnY)
             prdY: ndarray = estimators[clf].predict(tstX)
             performance: float = CLASS_EVAL_METRICS[metric](tstY, prdY)
+            print(performance-best_performance)
             if performance - best_performance > DELTA_IMPROVE:
                 best_performance = performance
                 best_model = estimators[clf]
         except Exception:
             print(f"Couldn't run {clf}")
             continue
+    print(best_model)
     if best_model is not None:
         prd: ndarray = best_model.predict(tstX)
         for key in CLASS_EVAL_METRICS:
@@ -672,9 +675,12 @@ def evaluate_approach(
     tstY = test.pop(target).values
     tstX: ndarray = test.values
     eval: dict[str, list] = {}
-
+    
     eval_NB: dict[str, float] | None = run_NB(trnX, trnY, tstX, tstY, metric=metric)
     eval_KNN: dict[str, float] | None = run_KNN(trnX, trnY, tstX, tstY, metric=metric)
+    
+    print(eval_NB)
+    print(eval_KNN)
     if eval_NB != {} and eval_KNN != {}:
         for met in CLASS_EVAL_METRICS:
             eval[met] = [eval_NB[met], eval_KNN[met]]
