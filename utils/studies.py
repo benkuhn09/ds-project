@@ -325,10 +325,11 @@ def evaluate_and_plot(
     lab_folder: str,
     file_tag: str,
     approach: str,
-    target_name: str = "class"
+    target_name: str = "class",
+    metric: str = "recall"
 ) -> None:
     figure()
-    eval: dict[str, list] = evaluate_approach(data=df, target=target_name)
+    eval: dict[str, list] = evaluate_approach(data=df, target=target_name, metric=metric)
     plot_multibar_chart(
         ["NB", "KNN"], {k: v for k, v in eval.items() if k != "confusion_matrix"}, title=f"{file_tag}-{approach} evaluation", percentage=True
     )
