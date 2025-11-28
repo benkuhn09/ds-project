@@ -633,6 +633,7 @@ def run_NB(trnX, trnY, tstX, tstY, metric: str = "accuracy") -> dict[str, float]
                 best_performance = performance
                 best_model = estimators[clf]
         except Exception:
+            print(f"Couldn't run {clf}")
             continue
     if best_model is not None:
         prd: ndarray = best_model.predict(tstX)
@@ -648,13 +649,17 @@ def run_KNN(trnX, trnY, tstX, tstY, metric="accuracy") -> dict[str, float]:
     best_performance: float = 0
     eval: dict[str, float] = {}
     for k in kvalues:
-        clf = KNeighborsClassifier(n_neighbors=k, metric="euclidean")
-        clf.fit(trnX, trnY)
-        prdY: ndarray = clf.predict(tstX)
-        performance: float = CLASS_EVAL_METRICS[metric](tstY, prdY)
-        if performance - best_performance > DELTA_IMPROVE:
-            best_performance = performance
-            best_model: KNeighborsClassifier = clf
+        try:
+            clf = KNeighborsClassifier(n_neighbors=k, metric="euclidean")
+            clf.fit(trnX, trnY)
+            prdY: ndarray = clf.predict(tstX)
+            performance: float = CLASS_EVAL_METRICS[metric](tstY, prdY)
+            if performance - best_performance > DELTA_IMPROVE:
+                best_performance = performance
+                best_model: KNeighborsClassifier = clf
+        except Exception:
+            print(f"Couldn't run {k}")
+            continue
     if best_model is not None:
         prd: ndarray = best_model.predict(tstX)
         for key in CLASS_EVAL_METRICS:
