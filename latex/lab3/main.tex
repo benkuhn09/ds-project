@@ -20,7 +20,7 @@
 \usepackage{graphicx}
 \usepackage{float}
 \usepackage{eso-pic}
-\graphicspath{ {../images/} {../../classification/ds1_traffic_accidents/charts/lab3_preparation/} {../../classification/ds2_flight_cancellation/charts/lab3_preparation/}}
+\graphicspath{ {../images/} {../../classification/ds1_traffic_accidents/charts/lab3_preparation/encodings}  {../../classification/ds1_traffic_accidents/charts/lab3_preparation/outliers} {../../classification/ds1_traffic_accidents/charts/lab3_preparation/scaling} {../../classification/ds1_traffic_accidents/charts/lab3_preparation/balancing} {../../classification/ds1_traffic_accidents/charts/lab3_preparation/feat_selection_generation} {../../classification/ds2_flight_cancellation/charts/lab3_preparation/}}
 \usepackage{subcaption}
 \usepackage{geometry}
 \usepackage{hyperref}
@@ -77,6 +77,18 @@
 \subsection*{\textit{Variables Encoding}}
 % \ctext[RGB]{190,190,190}{Shall contain all relevant information respecting to the transformation of variables. The list of variables under each one of the transformations, shall be presented. If not applied explain the reason for that, based on data characteristics.  \textbf{Shall not exceed 500 characters \textit{for each dataset.}}}
 
+\begin{figure}[H]
+\centering
+\subfloat[]{%
+  \centering\includegraphics[width=0.33\columnwidth]{traffic_encoding-1_nb_vs_knn_performance.png}%
+}
+\subfloat[]{%
+  \centering\includegraphics[width=0.33\columnwidth]{traffic_encoding-2_nb_vs_knn_performance.png}%
+}
+\caption{Encoding results with different approaches for Traffic Accident Data}
+\end{figure}
+
+
 \subsection*{\textit{Missing Value Imputation}}
 % \ctext[RGB]{190,190,190}{Shall contain all relevant information and charts respecting to missing values imputation, such as the choices made and the impact of the different approaches on modelling results. Shall also clearly reveal the approach selected to proceed with the processing. If not applied explain the reason for that, based on data characteristics.  \textbf{Shall not exceed 500 characters.}}
  
@@ -87,27 +99,70 @@ There are no missing values in the Traffic Accident Dataset.
 
 \begin{figure}[H]
 %\centering\includegraphics[scale=0.95]{}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\subfloat[]{%
+  \centering\includegraphics[width=0.33\columnwidth]{traffic_drop_outliers_nb_vs_knn_performance.png}%
+}
+\subfloat[]{%
+  \centering\includegraphics[width=0.33\columnwidth]{traffic_replacing_outliers_nb_vs_knn_performance.png}%
+}
+\subfloat[]{%
+  \centering\includegraphics[width=0.33\columnwidth]{traffic_truncate_outliers_nb_vs_knn_performance.png}%
+}
 \caption{Outliers imputation results with different approaches for Traffic Accident Data}
 \end{figure}
+
 
 \subsection*{\textit{Scaling}}
 % \ctext[RGB]{190,190,190}{Shall contain all relevant information and charts respecting to scaling transformation, such as the choices made and the impact of the different approaches on modelling results. Shall also clearly reveal the approach selected to proceed with the processing. If not applied explain the reason for that, based on data characteristics.  \textbf{Shall not exceed 200 characters.}}
 
 \begin{figure}[H]
-%\centering\includegraphics[scale=0.95]{}
+\centering
+\subfloat[]{%
+  \centering\includegraphics[width=0.33\columnwidth]{traffic_Standard-Scaler_nb_vs_knn_performance.png}%
+}
+\subfloat[]{%
+  \centering\includegraphics[width=0.33\columnwidth]{traffic_MinMax-Scaler_nb_vs_knn_performance.png}%
+}
 \caption{Scaling results with different approaches for Traffic Accident Data}
 \end{figure}
+
 
 \subsection*{\textit{Balancing}}
 % \ctext[RGB]{190,190,190}{Shall contain all relevant information and charts respecting to balancing transformation, such as the choices made and the impact of the different approaches on modelling results. Shall also clearly reveal the approach selected to proceed with the processing. If not applied explain the reason for that, based on data characteristics.  \textbf{Shall not exceed 500 characters.}}
 
 \begin{figure}[H]
-%\centering\includegraphics[scale=0.95]{}
+\centering
+\subfloat[]{%
+  \centering\includegraphics[width=0.33\columnwidth]{traffic_undersampling_nb_vs_knn_performance.png}%
+}
+\subfloat[]{%
+  \centering\includegraphics[width=0.33\columnwidth]{traffic_SMOTE_nb_vs_knn_performance.png}%
+}
 \caption{Balancing results with different approaches for Traffic Accident Data}
 \end{figure}
 
+
 \subsection*{\textit{Feature Selection}}
 % \ctext[RGB]{190,190,190}{Shall contain all relevant information and charts respecting to feature selection based on filtering out redundant (based on correlation) and relevant (based on variation) variables. The different choices and their impact on the modelling results shall be presented and explained. Should also clearly reveal the approach selected to proceed with the processing. All explanations shall be based on data characteristics.  \textbf{Shall not exceed 500 characters.}}
+
+\begin{figure}[H]
+\centering
+\subfloat[]{%
+  \centering\includegraphics[width=0.33\columnwidth]{traffic_1_nb_vs_knn_performance.png}%
+}
+\subfloat[]{%
+  \centering\includegraphics[width=0.33\columnwidth]{traffic_2_nb_vs_knn_performance.png}%
+}
+\subfloat[]{%
+  \centering\includegraphics[width=0.33\columnwidth]{traffic_3_nb_vs_knn_performance.png}%
+}
+\caption{Feature selection results for Traffic Accident Data}
+\end{figure}
+
 
 \begin{figure}[H]
 %\centering\includegraphics[scale=0.95]{}
@@ -121,6 +176,7 @@ There are no missing values in the Traffic Accident Dataset.
 
 \subsection*{\textit{Feature Extraction (optional)}}
 % \ctext[RGB]{190,190,190}{Shall contain all relevant information and charts respecting to feature extraction, in particular PCA. The different choices and their impact on the modelling results shall be presented and explained.  \textbf{Shall not exceed 200 characters.}}
+
 
 \begin{figure}[H]
 %\centering\includegraphics[scale=0.95]{}
@@ -138,7 +194,13 @@ There are no missing values in the Traffic Accident Dataset.
 \subsection*{\textit{Best approach}}
 
 \begin{figure}[H]
-%\centering\includegraphics[scale=0.95]{}
+\centering
+\subfloat[]{%
+  \centering\includegraphics[width=0.3\columnwidth]{traffic_2_nb_vs_knn_performance.png}%
+}
+\subfloat[]{%
+  \centering\includegraphics[width=0.47\columnwidth]{traffic_2_nb_vs_knn_confusion_matrix.png}%
+}
 \caption{Performance and confusion matrix for best approach for Traffic Accident Data}
 \end{figure}
 
