@@ -1,8 +1,10 @@
 import numpy as np
-from numpy import array, ndarray, argsort, arange
+from numpy import array, ndarray, argsort, arange, std
 from matplotlib.pyplot import subplots
 from matplotlib.pyplot import figure, savefig, show, subplots
 from pandas import DataFrame
+from sklearn.ensemble import GradientBoostingClassifier
+from sklearn.ensemble import RandomForestClassifier
 from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import train_test_split
 from sklearn.naive_bayes import GaussianNB, MultinomialNB, BernoulliNB
@@ -17,65 +19,42 @@ from dslabs_functions import \
     plot_confusion_matrix, plot_evaluation_results, plot_horizontal_bar_chart
 
 def naive_Bayes_study(
-    trnX: ndarray,
-    trnY: array,
-    tstX: ndarray,
-    tstY: array,
+    trnX: ndarray, 
+    trnY: array, 
+    tstX: ndarray, 
+    tstY: array, 
     metric: str = "accuracy"
-):
-    estimators = {
+) -> tuple:
+    estimators: dict = {
         "GaussianNB": GaussianNB(),
         "MultinomialNB": MultinomialNB(),
         "BernoulliNB": BernoulliNB(),
     }
 
-    xvalues = []
-    yvalues = []
+    xvalues: list = []
+    yvalues: list = []
     best_model = None
-    best_params = {"name": "", "metric": metric, "params": ()}
+    best_params: dict = {"name": "", "metric": metric, "params": ()}
     best_performance = 0
-
-    for clf_name in estimators:
-        try :
-            estimators[clf_name].fit(trnX, trnY)
-            xvalues.append(clf_name)
-            prdY = estimators[clf_name].predict(tstX)
-            val = CLASS_EVAL_METRICS[metric](tstY, prdY)
-            if val - best_performance > DELTA_IMPROVE:
-                best_performance = val
-                best_params["name"] = clf_name
-                best_params[metric] = val
-                best_model = estimators[clf_name]
-            yvalues.append(val)
-        except Exception:
-            print(f"Couldn't run {clf_name}")
-            continue
-
-    print(xvalues)
-    print(yvalues)
-    # get Axes from DSLabs helper
-    ax = plot_bar_chart(
+    for clf in estimators:
+        xvalues.append(clf)
+        estimators[clf].fit(trnX, trnY)
+        prdY: array = estimators[clf].predict(tstX)
+        eval: float = CLASS_EVAL_METRICS[metric](tstY, prdY)
+        if eval - best_performance > DELTA_IMPROVE:
+            best_performance: float = eval
+            best_params["name"] = clf
+            best_params[metric] = eval
+            best_model = estimators[clf]
+        yvalues.append(eval)
+        # print(f'NB {clf}')
+    plot_bar_chart(
         xvalues,
         yvalues,
         title=f"Naive Bayes Models ({metric})",
         ylabel=metric,
         percentage=True,
     )
-
-    # remove the default labels that plot_bar_chart added
-    for t in ax.texts:
-        t.set_visible(False)
-
-    # add our own labels with more precision (change .6f if you want)
-    for bar in ax.patches:
-        height = bar.get_height()
-        ax.annotate(
-            f"{height:.4f}",
-            (bar.get_x() + bar.get_width() / 2, height),
-            ha="center",
-            va="bottom",
-            fontsize=7,
-        )
 
     return best_model, best_params
 
@@ -87,36 +66,40 @@ def logistic_regression_study(
     nr_max_iterations: int = 2500,
     lag: int = 500,
     metric: str = "accuracy",
-):
-    nr_iterations = list(range(lag, nr_max_iterations + 1, lag))
-    penalty_types = ["l1", "l2"]  # only valid with solver='liblinear'
+) -> tuple[LogisticRegression | None, dict]:
+    nr_iterations: list[int] = [lag] + [
+        i for i in range(2 * lag, nr_max_iterations + 1, lag)
+    ]
+
+    penalty_types: list[str] = ["l1", "l2"]  # only available if optimizer='liblinear'
 
     best_model = None
-    best_params = {"name": "LR", "metric": metric, "params": ()}
-    best_performance = 0.0
+    best_params: dict = {"name": "LR", "metric": metric, "params": ()}
+    best_performance: float = 0.0
 
-    values = {}
-    for penalty in penalty_types:
-        y_tst_values = []
-        for n_iter in nr_iterations:
+    values: dict = {}
+    for type in penalty_types:
+        warm_start = False
+        y_tst_values: list[float] = []
+        for j in range(len(nr_iterations)):
             clf = LogisticRegression(
-                penalty=penalty,
-                max_iter=n_iter,
+                penalty=type,
+                max_iter=lag,
+                warm_start=warm_start,
                 solver="liblinear",
                 verbose=False,
             )
             clf.fit(trnX, trnY)
-            prdY = clf.predict(tstX)
-            val = CLASS_EVAL_METRICS[metric](tstY, prdY)
-            y_tst_values.append(val)
-
-            if val - best_performance > DELTA_IMPROVE:
-                best_performance = val
-                best_params["params"] = (penalty, n_iter)
-                best_model = clf
-
-        values[penalty] = y_tst_values
-
+            prdY: array = clf.predict(tstX)
+            eval: float = CLASS_EVAL_METRICS[metric](tstY, prdY)
+            y_tst_values.append(eval)
+            warm_start = True
+            if eval - best_performance > DELTA_IMPROVE:
+                best_performance = eval
+                best_params["params"] = (type, nr_iterations[j])
+                best_model: LogisticRegression = clf
+            # print(f'MLP lr_type={type} lr={lr} n={nr_iterations[j]}')
+        values[type] = y_tst_values
     plot_multiline_chart(
         nr_iterations,
         values,
@@ -125,108 +108,79 @@ def logistic_regression_study(
         ylabel=metric,
         percentage=True,
     )
-
-    print(
-        f'LR best for {best_params["params"][1]} iterations '
-        f'(penalty={best_params["params"][0]}) with {metric}={best_performance:.6f}'
-    )
+    print(f'LR best for {best_params["params"][1]} iterations (penalty={best_params["params"][0]})')
 
     return best_model, best_params
 
 def knn_study(
-    trnX: ndarray,
-    trnY: array,
-    tstX: ndarray,
-    tstY: array,
-    k_max: int = 19,
-    lag: int = 2,
-    metric: str = "accuracy",
-):
-    dist: list[Literal["manhattan", "euclidean", "chebyshev"]] = [
-        "manhattan",
-        "euclidean",
-        "chebyshev",
-    ]
+    trnX: ndarray, 
+    trnY: array, 
+    tstX: ndarray, 
+    tstY: array, 
+    k_max: int=19, 
+    lag: int=2, 
+    metric='accuracy'
+) -> tuple[KNeighborsClassifier | None, dict]:
+    dist: list[Literal['manhattan', 'euclidean', 'chebyshev']] = ['manhattan', 'euclidean', 'chebyshev']
 
-    kvalues = [i for i in range(1, k_max + 1, lag)]
+    kvalues: list[int] = [i for i in range(1, k_max+1, lag)]
     best_model: KNeighborsClassifier | None = None
-    best_params = {"name": "KNN", "metric": metric, "params": ()}
-    best_performance = 0.0
+    best_params: dict = {'name': 'KNN', 'metric': metric, 'params': ()}
+    best_performance: float = 0.0
 
     values: dict[str, list] = {}
     for d in dist:
-        y_tst_values = []
+        y_tst_values: list = []
         for k in kvalues:
             clf = KNeighborsClassifier(n_neighbors=k, metric=d)
             clf.fit(trnX, trnY)
-            prdY = clf.predict(tstX)
-            val = CLASS_EVAL_METRICS[metric](tstY, prdY)
-            y_tst_values.append(val)
-            if val - best_performance > DELTA_IMPROVE:
-                best_performance = val
-                best_params["params"] = (k, d)
+            prdY: array = clf.predict(tstX)
+            eval: float = CLASS_EVAL_METRICS[metric](tstY, prdY)
+            y_tst_values.append(eval)
+            if eval - best_performance > DELTA_IMPROVE:
+                best_performance: float = eval
+                best_params['params'] = (k, d)
                 best_model = clf
+            # print(f'KNN {d} k={k}')
         values[d] = y_tst_values
-
     print(f'KNN best with k={best_params["params"][0]} and {best_params["params"][1]}')
-
-    plot_multiline_chart(
-        kvalues,
-        values,
-        title=f"KNN Models ({metric})",
-        xlabel="k",
-        ylabel=metric,
-        percentage=True,
-    )
+    plot_multiline_chart(kvalues, values, title=f'KNN Models ({metric})', xlabel='k', ylabel=metric, percentage=True)
 
     return best_model, best_params
 
 def trees_study(
-    trnX: ndarray,
-    trnY: array,
-    tstX: ndarray,
-    tstY: array,
-    d_max: int = 10,
-    lag: int = 2,
-    metric: str = "accuracy",
-):
-    criteria = ["entropy", "gini"]
-    depths = [i for i in range(2, d_max + 1, lag)]
+    trnX: ndarray, 
+    trnY: array, 
+    tstX: ndarray, 
+    tstY: array, 
+    d_max: int=10, 
+    lag:int=2, 
+    metric='accuracy'
+) -> tuple:
+    criteria: list[Literal['entropy', 'gini']] = ['entropy', 'gini']
+    depths: list[int] = [i for i in range(2, d_max+1, lag)]
 
-    best_model = None
-    best_params = {"name": "DT", "metric": metric, "params": ()}
-    best_performance = 0.0
+    best_model: DecisionTreeClassifier | None = None
+    best_params: dict = {'name': 'DT', 'metric': metric, 'params': ()}
+    best_performance: float = 0.0
 
-    values = {}
+    values: dict = {}
     for c in criteria:
-        y_tst_values = []
+        y_tst_values: list[float] = []
         for d in depths:
-            clf = DecisionTreeClassifier(
-                max_depth=d,
-                criterion=c,
-                min_impurity_decrease=0,
-                random_state=42,
-            )
+            clf = DecisionTreeClassifier(max_depth=d, criterion=c, min_impurity_decrease=0)
             clf.fit(trnX, trnY)
-            prdY = clf.predict(tstX)
-            val = CLASS_EVAL_METRICS[metric](tstY, prdY)
-            y_tst_values.append(val)
-            if val - best_performance > DELTA_IMPROVE:
-                best_performance = val
-                best_params["params"] = (c, d)
+            prdY: array = clf.predict(tstX)
+            eval: float = CLASS_EVAL_METRICS[metric](tstY, prdY)
+            y_tst_values.append(eval)
+            if eval - best_performance > DELTA_IMPROVE:
+                best_performance = eval
+                best_params['params'] = (c, d)
                 best_model = clf
+            # print(f'DT {c} and d={d}')
         values[c] = y_tst_values
-
     print(f'DT best with {best_params["params"][0]} and d={best_params["params"][1]}')
-
-    plot_multiline_chart(
-        depths,
-        values,
-        title=f"DT Models ({metric})",
-        xlabel="d",
-        ylabel=metric,
-        percentage=True,
-    )
+    plot_multiline_chart(depths, values, title=f'DT Models ({metric})', xlabel='d', ylabel=metric, percentage=True)
 
     return best_model, best_params
 
@@ -235,33 +189,38 @@ def mlp_study(
     trnY: array,
     tstX: ndarray,
     tstY: array,
-    nr_max_iterations: int = 400,
-    lag: int = 100,
+    nr_max_iterations: int = 2500,
+    lag: int = 500,
     metric: str = "accuracy",
-):
-    nr_iterations = [lag] + [i for i in range(2 * lag, nr_max_iterations + 1, lag)]
+) -> tuple[MLPClassifier | None, dict]:
+    nr_iterations: list[int] = [lag] + [
+        i for i in range(2 * lag, nr_max_iterations + 1, lag)
+    ]
 
     lr_types: list[Literal["constant", "invscaling", "adaptive"]] = [
         "constant",
         "invscaling",
         "adaptive",
-    ]
-    learning_rates = [0.5, 0.05, 0.005, 0.005]
+    ]  # only used if optimizer='sgd'
+    learning_rates: list[float] = [0.5, 0.05, 0.005, 0.0005]
 
     best_model: MLPClassifier | None = None
-    best_params = {"name": "MLP", "metric": metric, "params": ()}
-    best_performance = 0.0
+    best_params: dict = {"name": "MLP", "metric": metric, "params": ()}
+    best_performance: float = 0.0
 
-    _, axs = subplots(1, len(lr_types), figsize=(len(lr_types) * HEIGHT, HEIGHT), squeeze=False)
-
-    for i, lr_type in enumerate(lr_types):
+    values: dict = {}
+    _, axs = subplots(
+        1, len(lr_types), figsize=(len(lr_types) * HEIGHT, HEIGHT), squeeze=False
+    )
+    for i in range(len(lr_types)):
+        type: str = lr_types[i]
         values = {}
         for lr in learning_rates:
-            warm_start = False
-            y_tst_values = []
-            for _ in range(len(nr_iterations)):
+            warm_start: bool = False
+            y_tst_values: list[float] = []
+            for j in range(len(nr_iterations)):
                 clf = MLPClassifier(
-                    learning_rate=lr_type,
+                    learning_rate=type,
                     learning_rate_init=lr,
                     max_iter=lag,
                     warm_start=warm_start,
@@ -270,30 +229,135 @@ def mlp_study(
                     verbose=False,
                 )
                 clf.fit(trnX, trnY)
-                prdY = clf.predict(tstX)
-                val = CLASS_EVAL_METRICS[metric](tstY, prdY)
-                y_tst_values.append(val)
+                prdY: array = clf.predict(tstX)
+                eval: float = CLASS_EVAL_METRICS[metric](tstY, prdY)
+                y_tst_values.append(eval)
                 warm_start = True
-                if val - best_performance > DELTA_IMPROVE:
-                    best_performance = val
-                    best_params["params"] = (lr_type, lr, nr_iterations[len(y_tst_values) - 1])
+                if eval - best_performance > DELTA_IMPROVE:
+                    best_performance = eval
+                    best_params["params"] = (type, lr, nr_iterations[j])
                     best_model = clf
+                # print(f'MLP lr_type={type} lr={lr} n={nr_iterations[j]}')
             values[lr] = y_tst_values
-
         plot_multiline_chart(
             nr_iterations,
             values,
             ax=axs[0, i],
-            title=f"MLP with {lr_type}",
+            title=f"MLP with {type}",
             xlabel="nr iterations",
             ylabel=metric,
             percentage=True,
         )
-
     print(
-        f'MLP best for {best_params["params"][2]} iterations '
-        f'(lr_type={best_params["params"][0]} and lr={best_params["params"][1]}) '
-        f'with {metric}={best_performance:.6f}'
+        f'MLP best for {best_params["params"][2]} iterations (lr_type={best_params["params"][0]} and lr={best_params["params"][1]}'
+    )
+
+    return best_model, best_params
+
+def random_forests_study(
+    trnX: ndarray,
+    trnY: array,
+    tstX: ndarray,
+    tstY: array,
+    nr_max_trees: int = 2500,
+    lag: int = 500,
+    metric: str = "accuracy",
+) -> tuple[RandomForestClassifier | None, dict]:
+    n_estimators: list[int] = [100] + [i for i in range(500, nr_max_trees + 1, lag)]
+    max_depths: list[int] = [2, 5, 7]
+    max_features: list[float] = [0.1, 0.3, 0.5, 0.7, 0.9]
+
+    best_model: RandomForestClassifier | None = None
+    best_params: dict = {"name": "RF", "metric": metric, "params": ()}
+    best_performance: float = 0.0
+
+    values: dict = {}
+
+    cols: int = len(max_depths)
+    _, axs = subplots(1, cols, figsize=(cols * HEIGHT, HEIGHT), squeeze=False)
+    for i in range(len(max_depths)):
+        d: int = max_depths[i]
+        values = {}
+        for f in max_features:
+            y_tst_values: list[float] = []
+            for n in n_estimators:
+                clf = RandomForestClassifier(
+                    n_estimators=n, max_depth=d, max_features=f
+                )
+                clf.fit(trnX, trnY)
+                prdY: array = clf.predict(tstX)
+                eval: float = CLASS_EVAL_METRICS[metric](tstY, prdY)
+                y_tst_values.append(eval)
+                if eval - best_performance > DELTA_IMPROVE:
+                    best_performance = eval
+                    best_params["params"] = (d, f, n)
+                    best_model = clf
+                # print(f'RF d={d} f={f} n={n}')
+            values[f] = y_tst_values
+        plot_multiline_chart(
+            n_estimators,
+            values,
+            ax=axs[0, i],
+            title=f"Random Forests with max_depth={d}",
+            xlabel="nr estimators",
+            ylabel=metric,
+            percentage=True,
+        )
+    print(
+        f'RF best for {best_params["params"][2]} trees (d={best_params["params"][0]} and f={best_params["params"][1]})'
+    )
+    return best_model, best_params
+
+def gradient_boosting_study(
+    trnX: ndarray,
+    trnY: array,
+    tstX: ndarray,
+    tstY: array,
+    nr_max_trees: int = 2500,
+    lag: int = 500,
+    metric: str = "accuracy",
+) -> tuple[GradientBoostingClassifier | None, dict]:
+    n_estimators: list[int] = [100] + [i for i in range(500, nr_max_trees + 1, lag)]
+    max_depths: list[int] = [2, 5, 7]
+    learning_rates: list[float] = [0.1, 0.3, 0.5, 0.7, 0.9]
+
+    best_model: GradientBoostingClassifier | None = None
+    best_params: dict = {"name": "GB", "metric": metric, "params": ()}
+    best_performance: float = 0.0
+
+    values: dict = {}
+    cols: int = len(max_depths)
+    _, axs = subplots(1, cols, figsize=(cols * HEIGHT, HEIGHT), squeeze=False)
+    for i in range(len(max_depths)):
+        d: int = max_depths[i]
+        values = {}
+        for lr in learning_rates:
+            y_tst_values: list[float] = []
+            for n in n_estimators:
+                clf = GradientBoostingClassifier(
+                    n_estimators=n, max_depth=d, learning_rate=lr
+                )
+                clf.fit(trnX, trnY)
+                prdY: array = clf.predict(tstX)
+                eval: float = CLASS_EVAL_METRICS[metric](tstY, prdY)
+                y_tst_values.append(eval)
+                if eval - best_performance > DELTA_IMPROVE:
+                    best_performance = eval
+                    best_params["params"] = (d, lr, n)
+                    best_model = clf
+                # print(f'GB d={d} lr={lr} n={n}')
+            values[lr] = y_tst_values
+        plot_multiline_chart(
+            n_estimators,
+            values,
+            ax=axs[0, i],
+            title=f"Gradient Boosting with max_depth={d}",
+            xlabel="nr estimators",
+            ylabel=metric,
+            percentage=True,
+        )
+    print(
+        f'GB best for {best_params["params"][2]} trees (d={best_params["params"][0]} and lr={best_params["params"][1]}'
     )
 
     return best_model, best_params
@@ -311,7 +375,7 @@ def separate_train_test(
     
     # Split the data
     trnX, tstX, trnY, tstY = train_test_split(
-        X, y, test_size=test_size, random_state=random_state
+        X, y, test_size=test_size, random_state=random_state, stratify=y
     )
     
     return trnX, tstX, trnY, tstY
@@ -330,7 +394,7 @@ def evaluate_approach(
     
     # Split the data
     trnX, tstX, trnY, tstY = train_test_split(
-        X, y, test_size=test_size, random_state=random_state, stratify=target
+        X, y, test_size=test_size, random_state=random_state, stratify=y
     )
     
     eval: dict[str, list] = {}
@@ -374,13 +438,13 @@ def evaluate_and_plot(
 def get_path_aux(lab_folder: str):
     if "lab3" in lab_folder:
         return "../.."
-    elif "lab1" in lab_folder:
+    elif "lab1" in lab_folder or "lab4" in lab_folder:
         return ".."
 
-def predict_and_eval(features_train: DataFrame,
-    target_train: DataFrame,
-    features_test: DataFrame,
-    target_test: DataFrame,
+def predict_and_eval(features_train: ndarray,
+    target_train: array,
+    features_test: ndarray,
+    target_test: array,
     best_model: DataFrame,
     params: DataFrame,
     lab_folder: str,
@@ -403,51 +467,35 @@ def predict_and_eval(features_train: DataFrame,
     savefig(f'{get_path_aux(lab_folder)}/charts/{lab_folder}/{file_tag}_{approach}_{params["name"]}_best_{params["metric"]}_eval.png', bbox_inches='tight')
     show()
 
-def best_model_nb(
-    features_train: DataFrame,
-    target_train: DataFrame,
-    features_test: DataFrame,
-    target_test: DataFrame,
+def run_all_nb(features_train: ndarray,
+    target_train: array,
+    features_test: ndarray,
+    target_test: array,
     lab_folder: str,
     file_tag: str,
     approach: str,
-    eval_metric: str
-) -> {DataFrame, DataFrame}:
+    eval_metric: str,
+):  
     figure()
-    nb_best_model, nb_params = naive_Bayes_study(
+    best_model, params = naive_Bayes_study(
         features_train,
         target_train,
         features_test,
         target_test,
         metric=eval_metric
     )
-    savefig(f'{get_path_aux(lab_folder)}/charts/{lab_folder}/{file_tag}_{approach}_{nb_params["name"]}_{nb_params["metric"]}_study.png', bbox_inches='tight')
+    savefig(f'{get_path_aux(lab_folder)}/charts/{lab_folder}/{file_tag}_{approach}_{params["name"]}_{params["metric"]}_study.png', bbox_inches='tight')
     show()
-    return nb_best_model, nb_params
 
-def run_all_nb(features_train: DataFrame,
-    target_train: DataFrame,
-    features_test: DataFrame,
-    target_test: DataFrame,
-    lab_folder: str,
-    file_tag: str,
-    approach: str,
-    eval_metric: str,
-):  
-    best_model, params = best_model_nb(
-        features_train, target_train, features_test, target_test, 
-        lab_folder, file_tag, approach,
-        eval_metric = eval_metric
-    ) 
-    predict_and_eval(features_train,target_train, features_test, target_test, 
+    predict_and_eval(features_train, target_train, features_test, target_test, 
         best_model, params, lab_folder, file_tag, approach)                    
     return best_model, params                    
 
 def best_model_knn(
-    features_train: DataFrame,
-    target_train: DataFrame,
-    features_test: DataFrame,
-    target_test: DataFrame,
+    features_train: ndarray,
+    target_train: array,
+    features_test: ndarray,
+    target_test: array,
     lab_folder: str,
     file_tag: str,
     approach: str,
@@ -470,11 +518,11 @@ def best_model_knn(
     return knn_best_model, knn_params  
 
 def knn_overfitting(
-    features_train: DataFrame,
-    target_train: DataFrame,
-    features_test: DataFrame,
-    target_test: DataFrame,
-    params: DataFrame,
+    features_train: ndarray,
+    target_train: array,
+    features_test: ndarray,
+    target_test: array,
+    params: dict,
     lab_folder: str,
     file_tag: str,
     approach: str,
@@ -509,10 +557,10 @@ def knn_overfitting(
     savefig(f'{get_path_aux(lab_folder)}/charts/{lab_folder}/{file_tag}_{approach}_{params["name"]}_{params["metric"]}_overfitting.png', bbox_inches='tight')
     show()
 
-def run_all_knn(features_train: DataFrame,
-    target_train: DataFrame,
-    features_test: DataFrame,
-    target_test: DataFrame,
+def run_all_knn(features_train: ndarray,
+    target_train: array,
+    features_test: ndarray,
+    target_test: array,
     lab_folder: str,
     file_tag: str,
     approach: str,
@@ -533,15 +581,15 @@ def run_all_knn(features_train: DataFrame,
         lag=lag,
         eval_metric = eval_metric
     ) 
-    predict_and_eval(features_train,target_train, features_test, target_test, 
+    predict_and_eval(features_train, target_train, features_test, target_test, 
         best_model, params, lab_folder, file_tag, approach)                    
     return best_model, params                    
 
 def best_model_lr(
-    features_train: DataFrame,
-    target_train: DataFrame,
-    features_test: DataFrame,
-    target_test: DataFrame,
+    features_train: ndarray,
+    target_train: array,
+    features_test: ndarray,
+    target_test: array,
     lab_folder: str,
     file_tag: str,
     approach: str,
@@ -563,13 +611,62 @@ def best_model_lr(
     show()     
     return lr_best_model, lr_params  
 
-def run_all_lr(features_train: DataFrame,
-    target_train: DataFrame,
-    features_test: DataFrame,
-    target_test: DataFrame,
+def lr_overfitting(
+    features_train: ndarray,
+    target_train: array,
+    features_test: ndarray,
+    target_test: array,
+    params: dict,
     lab_folder: str,
     file_tag: str,
-    approach: str,nr_max_iterations: int,
+    approach: str,
+    nr_max_iterations: int,
+    lag: int,
+    eval_metric: str
+):  
+    type: str = params["params"][0]
+    nr_iterations: list[int] = [i for i in range(lag, nr_max_iterations+1, lag)]
+
+    y_tst_values: list[float] = []
+    y_trn_values: list[float] = []
+    
+    warm_start = False
+    for n in nr_iterations:
+        clf = LogisticRegression(
+            warm_start=warm_start,
+            penalty=type,
+            max_iter=n,
+            solver="liblinear",
+            verbose=False,
+        )
+        clf.fit(features_train, target_train)
+        prd_tst_Y: array = clf.predict(features_test)
+        prd_trn_Y: array = clf.predict(features_train)
+        y_tst_values.append(CLASS_EVAL_METRICS[eval_metric](target_test, prd_tst_Y))
+        y_trn_values.append(CLASS_EVAL_METRICS[eval_metric](target_train, prd_trn_Y))
+        warm_start = True
+
+    figure()
+    plot_multiline_chart(
+        nr_iterations,
+        {"Train": y_trn_values, "Test": y_tst_values},
+        title=f"LR overfitting study for penalty={type}",
+        xlabel="nr_iterations",
+        ylabel=str(eval_metric),
+        percentage=True,
+    )
+    savefig(f'{get_path_aux(lab_folder)}/charts/{lab_folder}/{file_tag}_{approach}_{params["name"]}_{params["metric"]}_overfitting.png', bbox_inches='tight')
+    show()
+
+def run_all_lr(
+    features_train: ndarray,
+    target_train: array,
+    features_test: ndarray,
+    target_test: array,
+    lab_folder: str,
+    file_tag: str,
+    approach: str,
+    nr_max_iterations: int,
     lag: int,
     eval_metric: str
 ):  
@@ -580,17 +677,22 @@ def run_all_lr(features_train: DataFrame,
         lag=lag,
         eval_metric = eval_metric
     )
-
-    predict_and_eval(features_train,target_train, features_test, target_test, 
+    lr_overfitting(features_train, target_train, features_test, target_test, 
+        params, lab_folder, file_tag, approach,
+        nr_max_iterations=nr_max_iterations,
+        lag=lag,
+        eval_metric = eval_metric
+    ) 
+    predict_and_eval(features_train, target_train, features_test, target_test, 
         best_model, params, lab_folder, file_tag, approach)                    
     return best_model, params                    
 
 def dt_overfitting(
-    features_train: DataFrame,
-    target_train: DataFrame,
-    features_test: DataFrame,
-    target_test: DataFrame,
-    params: DataFrame,
+    features_train: ndarray,
+    target_train: array,
+    features_test: ndarray,
+    target_test: array,
+    params: dict,
     lab_folder: str,
     file_tag: str,
     approach: str,
@@ -630,10 +732,11 @@ def dt_overfitting(
     savefig(f'{get_path_aux(lab_folder)}/charts/{lab_folder}/{file_tag}_{approach}_{params["name"]}_{params["metric"]}_overfitting.png', bbox_inches='tight')
     show()
 
-def run_all_dt(features_train: DataFrame,
-    target_train: DataFrame,
-    features_test: DataFrame,
-    target_test: DataFrame,
+def run_all_dt(
+    features_train: ndarray,
+    target_train: array,
+    features_test: ndarray,
+    target_test: array,
     lab_folder: str,
     file_tag: str,
     approach: str,
@@ -659,23 +762,23 @@ def run_all_dt(features_train: DataFrame,
         lag=lag,
         eval_metric = eval_metric
     ) 
-    predict_and_eval(features_train,target_train, features_test, target_test, 
+    predict_and_eval(features_train, target_train, features_test, target_test, 
         best_model, params, lab_folder, file_tag, approach)
     return best_model, params                    
 
-def show_tree_and_importances(
+def show_tree_and_importances_dt(
     features: DataFrame,
     target: DataFrame, 
     dt_best_model: DataFrame, 
-    dt_params: DataFrame,
+    dt_params: dict,
     lab_folder: str,
     file_tag: str,
     approach: str,
     max_depth2show: int
 ):
-    dt_feature_names = list(features.columns)
+    dt_feature_names = list(map(str, list(features.columns)))
 
-    dt_class_names = sorted(target.unique())
+    dt_class_names = list(map(str, sorted(target.unique())))
 
     figure(figsize=(18, 10))
     plot_tree(
@@ -721,11 +824,11 @@ def show_tree_and_importances(
     show()
 
 def mlp_overfitting(
-    features_train: DataFrame,
-    target_train: DataFrame,
-    features_test: DataFrame,
-    target_test: DataFrame,
-    params: DataFrame,
+    features_train: ndarray,
+    target_train: array,
+    features_test: ndarray,
+    target_test: array,
+    params: dict,
     lab_folder: str,
     file_tag: str,
     approach: str,
@@ -770,10 +873,10 @@ def mlp_overfitting(
     savefig(f'{get_path_aux(lab_folder)}/charts/{lab_folder}/{file_tag}_{approach}_{params["name"]}_{params["metric"]}_overfitting.png', bbox_inches='tight')
     show()
 
-def run_all_mlp(features_train: DataFrame,
-    target_train: DataFrame,
-    features_test: DataFrame,
-    target_test: DataFrame,
+def run_all_mlp(features_train: ndarray,
+    target_train: array,
+    features_test: ndarray,
+    target_test: array,
     lab_folder: str,
     file_tag: str,
     approach: str,
@@ -813,7 +916,227 @@ def run_all_mlp(features_train: DataFrame,
     savefig(f'{get_path_aux(lab_folder)}/charts/{lab_folder}/{file_tag}_{approach}_{params["name"]}_{params["metric"]}_loss_curve.png', bbox_inches='tight')
     show()
 
-    predict_and_eval(features_train,target_train, features_test, target_test, 
+    predict_and_eval(features_train, target_train, features_test, target_test, 
         best_model, params, lab_folder, file_tag, approach)
     return best_model, params                    
 
+def rf_overfitting(
+    features_train: ndarray,
+    target_train: array,
+    features_test: ndarray,
+    target_test: array,
+    params: dict,
+    lab_folder: str,
+    file_tag: str,
+    approach: str,
+    nr_max_trees: int,
+    lag: int,
+    eval_metric: str
+):
+    d_max: int = params["params"][0]
+    feat: float = params["params"][1]
+    nr_estimators: list[int] = [i for i in range(2, nr_max_trees+1, lag)]
+
+    y_tst_values: list[float] = []
+    y_trn_values: list[float] = []
+    
+    for n in nr_estimators:
+        clf = RandomForestClassifier(n_estimators=n, max_depth=d_max, max_features=feat)
+        clf.fit(features_train, target_train)
+        prd_tst_Y: array = clf.predict(features_test)
+        prd_trn_Y: array = clf.predict(features_train)
+        y_tst_values.append(CLASS_EVAL_METRICS[eval_metric](target_test, prd_tst_Y))
+        y_trn_values.append(CLASS_EVAL_METRICS[eval_metric](target_train, prd_trn_Y))
+
+    figure()
+    plot_multiline_chart(
+        nr_estimators,
+        {"Train": y_trn_values, "Test": y_tst_values},
+        title=f"RF overfitting study for d={d_max} and f={feat}",
+        xlabel="nr_estimators",
+        ylabel=str(eval_metric),
+        percentage=True,
+    )
+    savefig(f'{get_path_aux(lab_folder)}/charts/{lab_folder}/{file_tag}_{approach}_{params["name"]}_{params["metric"]}_overfitting.png', bbox_inches='tight')
+    show()
+
+def show_importances_rf(
+    features: DataFrame,
+    best_model: DataFrame, 
+    params: dict,
+    lab_folder: str,
+    file_tag: str,
+    approach: str,
+):
+    stdevs: list[float] = list(
+        std([tree.feature_importances_ for tree in best_model.estimators_], axis=0)
+    )
+    importances = best_model.feature_importances_
+    rf_vars = list(features.columns)
+    indices: list[int] = argsort(importances)[::-1]
+    elems: list[str] = []
+    imp_values: list[float] = []
+    for f in range(len(rf_vars)):
+        elems += [rf_vars[indices[f]]]
+        imp_values.append(importances[indices[f]])
+        print(f"{f+1}. {elems[f]} ({importances[indices[f]]})")
+
+    figure()
+    plot_horizontal_bar_chart(
+        elems,
+        imp_values,
+        error=stdevs,
+        title="RF variables importance",
+        xlabel="importance",
+        ylabel="variables",
+        percentage=True,
+    )
+    savefig(f'{get_path_aux(lab_folder)}/charts/{lab_folder}/{file_tag}_{approach}_{params["name"]}_{params["metric"]}_vars_ranking.png', bbox_inches='tight')
+    show()
+
+def run_all_rf(features_train: ndarray,
+    target_train: array,
+    features_test: ndarray,
+    target_test: array,
+    lab_folder: str,
+    file_tag: str,
+    approach: str,
+    nr_max_trees: int,
+    lag: int,
+    eval_metric: str
+):  
+    figure()
+    best_model, params = random_forests_study(
+        features_train,
+        target_train,
+        features_test,
+        target_test,
+        nr_max_trees=nr_max_trees,
+        lag=lag,
+        metric=eval_metric,
+    )
+    savefig(f'{get_path_aux(lab_folder)}/charts/{lab_folder}/{file_tag}_{approach}_{params["name"]}_{params["metric"]}_study.png', bbox_inches='tight')
+    show()
+
+    rf_overfitting(features_train, target_train, features_test, target_test, 
+        params, lab_folder, file_tag, approach,
+        nr_max_trees=nr_max_trees,
+        lag=lag,
+        eval_metric = eval_metric
+    )
+
+    predict_and_eval(features_train, target_train, features_test, target_test, 
+        best_model, params, lab_folder, file_tag, approach)
+    return best_model, params  
+
+def gb_overfitting(
+    features_train: ndarray,
+    target_train: array,
+    features_test: ndarray,
+    target_test: array,
+    params: dict,
+    lab_folder: str,
+    file_tag: str,
+    approach: str,
+    nr_max_trees: int,
+    lag: int,
+    eval_metric: str
+):
+    d_max: int = params["params"][0]
+    lr: float = params["params"][1]
+    nr_estimators: list[int] = [i for i in range(2, nr_max_trees+1, lag)]
+
+    y_tst_values: list[float] = []
+    y_trn_values: list[float] = []
+    
+    for n in nr_estimators:
+        clf = GradientBoostingClassifier(n_estimators=n, max_depth=d_max, learning_rate=lr)
+        clf.fit(features_train, target_train)
+        prd_tst_Y: array = clf.predict(features_test)
+        prd_trn_Y: array = clf.predict(features_train)
+        y_tst_values.append(CLASS_EVAL_METRICS[eval_metric](target_test, prd_tst_Y))
+        y_trn_values.append(CLASS_EVAL_METRICS[eval_metric](target_train, prd_trn_Y))
+
+    figure()
+    plot_multiline_chart(
+        nr_estimators,
+        {"Train": y_trn_values, "Test": y_tst_values},
+        title=f"GB overfitting study for d={d_max} and lr={lr}",
+        xlabel="nr_estimators",
+        ylabel=str(eval_metric),
+        percentage=True,
+    )
+    savefig(f'{get_path_aux(lab_folder)}/charts/{lab_folder}/{file_tag}_{approach}_{params["name"]}_{params["metric"]}_overfitting.png', bbox_inches='tight')
+    show()
+
+def show_importances_gb(
+    features: DataFrame,
+    best_model: DataFrame, 
+    params: dict,
+    lab_folder: str,
+    file_tag: str,
+    approach: str,
+):
+    trees_importances: list[float] = []
+    for lst_trees in best_model.estimators_:
+        for tree in lst_trees:
+            trees_importances.append(tree.feature_importances_)
+
+    stdevs: list[float] = list(std(trees_importances, axis=0))
+    importances = best_model.feature_importances_
+    gb_vars = list(features.columns)
+    indices: list[int] = argsort(importances)[::-1]
+    elems: list[str] = []
+    imp_values: list[float] = []
+    for f in range(len(gb_vars)):
+        elems += [gb_vars[indices[f]]]
+        imp_values.append(importances[indices[f]])
+        print(f"{f+1}. {elems[f]} ({importances[indices[f]]})")
+
+    figure()
+    plot_horizontal_bar_chart(
+        elems,
+        imp_values,
+        error=stdevs,
+        title="GB variables importance",
+        xlabel="importance",
+        ylabel="variables",
+        percentage=True,
+    )
+    savefig(f'{get_path_aux(lab_folder)}/charts/{lab_folder}/{file_tag}_{approach}_{params["name"]}_{params["metric"]}_vars_ranking.png', bbox_inches='tight')
+    show()
+
+def run_all_gb(features_train: ndarray,
+    target_train: array,
+    features_test: ndarray,
+    target_test: array,
+    lab_folder: str,
+    file_tag: str,
+    approach: str,
+    nr_max_trees: int,
+    lag: int,
+    eval_metric: str
+):  
+    figure()
+    best_model, params = gradient_boosting_study(
+        features_train,
+        target_train,
+        features_test,
+        target_test,
+        nr_max_trees=nr_max_trees,
+        lag=lag,
+        metric=eval_metric,
+    )
+    savefig(f'{get_path_aux(lab_folder)}/charts/{lab_folder}/{file_tag}_{approach}_{params["name"]}_{params["metric"]}_study.png', bbox_inches='tight')
+    show()
+    
+    gb_overfitting(features_train, target_train, features_test, target_test, 
+        params, lab_folder, file_tag, approach,
+        nr_max_trees=nr_max_trees,
+        lag=lag,
+        eval_metric = eval_metric
+    )
+
+    predict_and_eval(features_train, target_train, features_test, target_test, 
+        best_model, params, lab_folder, file_tag, approach)
+    return best_model, params  
