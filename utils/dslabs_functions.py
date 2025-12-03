@@ -518,7 +518,6 @@ def study_variance_for_feature_selection(
         ylabel=metric,
         percentage=True,
     )
-    savefig(f"images/{file_tag}_fs_low_var_{metric}_study.png")
     return results
 
 
@@ -557,7 +556,7 @@ def study_redundancy_for_feature_selection(
         vars2drop: list = []
         for v1 in variables:
             vars_corr: Series = (corr_matrix[v1]).loc[corr_matrix[v1] >= thresh]
-            vars_corr.drop(v1, inplace=True)
+            vars_corr.drop(v1, inplace=True, errors="ignore")
             if len(vars_corr) > 1:
                 lst_corr = list(vars_corr.index)
                 for v2 in lst_corr:
@@ -579,7 +578,6 @@ def study_redundancy_for_feature_selection(
         ylabel=metric,
         percentage=True,
     )
-    savefig(f"images/{file_tag}_fs_redundancy_{metric}_study.png")
     return results
 
 
