@@ -258,6 +258,87 @@ def mlp_study(
 
     return best_model, best_params
 
+def mlp_study_tuned_for_flight(
+    trnX: ndarray,
+    trnY: array,
+    tstX: ndarray,
+    tstY: array,
+    nr_max_iterations: int = 2500,
+    lag: int = 500,
+    metric: str = "recall",
+) -> tuple[MLPClassifier | None, dict]:
+    nr_iterations: list[int] = [lag] + [
+        i for i in range(2 * lag, nr_max_iterations + 1, lag)
+    ]
+
+    lr_types: list[Literal["constant", "invscaling", "adaptive"]] = [
+        "constant",
+        "invscaling",
+        "adaptive",
+    ]  # only used if optimizer='sgd'
+    learning_rates: list[float] = [0.5, 0.05, 0.005]
+
+    best_model: MLPClassifier | None = None
+    best_params: dict = {"name": "MLP", "metric": metric, "params": ()}
+    best_performance: float = 0.0
+
+    values: dict = {}
+    _, axs = subplots(
+        1, len(lr_types), figsize=(len(lr_types) * HEIGHT, HEIGHT), squeeze=False
+    )
+    total_configs = len(lr_types) * len(learning_rates) * len(nr_iterations)
+    current_config = 0
+    
+    for i in range(len(lr_types)):
+        type: str = lr_types[i]
+        values = {}
+        for lr in learning_rates:
+            warm_start: bool = False
+            y_tst_values: list[float] = []
+            for j in range(len(nr_iterations)):
+                current_config += 1
+                print(f"\n[{current_config}/{total_configs}] Training MLP: lr_type={type}, lr={lr}, iterations={nr_iterations[j]}")
+                
+                clf = MLPClassifier(
+                    learning_rate=type,
+                    learning_rate_init=lr,
+                    max_iter=lag,
+                    warm_start=warm_start,
+                    activation="logistic",
+                    solver="sgd",
+                    verbose=True,
+                )
+                clf.fit(trnX, trnY)
+                prdY: array = clf.predict(tstX)
+                eval: float = CLASS_EVAL_METRICS[metric](tstY, prdY)
+                y_tst_values.append(eval)
+                warm_start = True
+                
+                print(f"  -> {metric}: {eval:.4f}", end="")
+                if eval - best_performance > DELTA_IMPROVE:
+                    best_performance = eval
+                    best_params["params"] = (type, lr, nr_iterations[j])
+                    best_model = clf
+                    print(f" ✓ NEW BEST!")
+                else:
+                    print()
+                    
+            values[lr] = y_tst_values
+        plot_multiline_chart(
+            nr_iterations,
+            values,
+            ax=axs[0, i],
+            title=f"MLP with {type}",
+            xlabel="nr iterations",
+            ylabel=metric,
+            percentage=True,
+        )
+    print(
+        f'MLP best for {best_params["params"][2]} iterations (lr_type={best_params["params"][0]} and lr={best_params["params"][1]}'
+    )
+
+    return best_model, best_params
+
 def random_forests_study(
     trnX: ndarray,
     trnY: array,
@@ -924,6 +1005,56 @@ def mlp_overfitting(
     savefig(f'{get_path_aux(lab_folder)}/charts/{lab_folder}/{file_tag}_{approach}_{params["name"]}_{params["metric"]}_overfitting.png', bbox_inches='tight')
     show()
 
+def mlp_overfitting_for_flight(
+    features_train: ndarray,
+    target_train: array,
+    features_test: ndarray,
+    target_test: array,
+    params: dict,
+    lab_folder: str,
+    file_tag: str,
+    approach: str,
+    nr_max_iterations: int,
+    lag: int,
+    eval_metric: str
+):
+    lr_type = params["params"][0]
+    lr = params["params"][1]
+
+    nr_iterations = [i for i in range(lag, nr_max_iterations + 1, lag)]
+
+    y_tst_values = []
+    y_trn_values = []
+    
+    for n in nr_iterations:
+        clf = MLPClassifier(
+            learning_rate=lr_type,
+            learning_rate_init=lr,
+            max_iter=n,
+            activation="logistic",
+            solver="adam",
+            verbose=True,
+            random_state=42,
+        )
+        clf.fit(features_train, target_train)
+        prd_tst_Y = clf.predict(features_test)
+        prd_trn_Y = clf.predict(features_train)
+
+        y_tst_values.append(CLASS_EVAL_METRICS[eval_metric](target_test, prd_tst_Y))
+        y_trn_values.append(CLASS_EVAL_METRICS[eval_metric](target_train, prd_trn_Y))
+
+    figure()
+    plot_multiline_chart(
+        nr_iterations,
+        {"Train": y_trn_values, "Test": y_tst_values},
+        title=f"MLP overfitting study for lr_type={lr_type} and lr={lr}",
+        xlabel="nr_iterations",
+        ylabel=eval_metric,
+        percentage=True,
+    )
+    savefig(f'{get_path_aux(lab_folder)}/charts/{lab_folder}/{file_tag}_{approach}_{params["name"]}_{params["metric"]}_overfitting.png', bbox_inches='tight')
+    show()
+
 def run_all_mlp(features_train: ndarray,
     target_train: array,
     features_test: ndarray,
@@ -933,27 +1064,47 @@ def run_all_mlp(features_train: ndarray,
     approach: str,
     nr_max_iterations: int,
     lag: int,
-    eval_metric: str
+    eval_metric: str,
+    flight: bool = False
 ):  
     figure()
-    best_model, params = mlp_study(
-        features_train,
-        target_train,
-        features_test,
-        target_test,
-        nr_max_iterations=nr_max_iterations,
-        lag=lag,
-        metric=eval_metric,
-    )
+    if flight:
+        best_model, params = mlp_study_tuned_for_flight(
+            features_train,
+            target_train,
+            features_test,
+            target_test,
+            nr_max_iterations=nr_max_iterations,
+            lag=lag,
+            metric=eval_metric,
+        )
+    else:
+        best_model, params = mlp_study(
+            features_train,
+            target_train,
+            features_test,
+            target_test,
+            nr_max_iterations=nr_max_iterations,
+            lag=lag,
+            metric=eval_metric,
+        )
     savefig(f'{get_path_aux(lab_folder)}/charts/{lab_folder}/{file_tag}_{approach}_{params["name"]}_{params["metric"]}_study.png', bbox_inches='tight')
     show()
     
-    mlp_overfitting(features_train, target_train, features_test, target_test, 
-        params, lab_folder, file_tag, approach,
-        nr_max_iterations=nr_max_iterations,
-        lag=lag,
-        eval_metric = eval_metric
-    )
+    if flight:        
+        mlp_overfitting(features_train, target_train, features_test, target_test, 
+            params, lab_folder, file_tag, approach,
+            nr_max_iterations=nr_max_iterations,
+            lag=lag,
+            eval_metric = eval_metric
+        )
+    else:
+       mlp_overfitting_for_flight(features_train, target_train, features_test, target_test, 
+            params, lab_folder, file_tag, approach,
+            nr_max_iterations=nr_max_iterations,
+            lag=lag,
+            eval_metric = eval_metric
+        ) 
     
     figure()
     plot_line_chart(
