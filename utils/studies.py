@@ -121,34 +121,54 @@ def knn_study(
     trnY: array, 
     tstX: ndarray, 
     tstY: array, 
-    k_max: int=19, 
-    lag: int=2, 
-    metric='accuracy'
+    k_max: int = 19, 
+    lag: int = 2, 
+    metric: str = "accuracy",
+    verbose: bool = False,
 ) -> tuple[KNeighborsClassifier | None, dict]:
-    dist: list[Literal['manhattan', 'euclidean', 'chebyshev']] = ['manhattan', 'euclidean', 'chebyshev']
+    dist: list[Literal['manhattan', 'euclidean', 'chebyshev']] = [
+        'manhattan', 'euclidean', 'chebyshev'
+    ]
 
-    kvalues: list[int] = [i for i in range(1, k_max+1, lag)]
+    kvalues: list[int] = [i for i in range(1, k_max + 1, lag)]
     best_model: KNeighborsClassifier | None = None
     best_params: dict = {'name': 'KNN', 'metric': metric, 'params': ()}
     best_performance: float = 0.0
 
     values: dict[str, list] = {}
+
+    # progress bookkeeping
+    total_configs = len(dist) * len(kvalues)
+    current_config = 0
+
     for d in dist:
         y_tst_values: list = []
         for k in kvalues:
+            current_config += 1
+            if verbose:
+                print(f"[{current_config}/{total_configs}] KNN: metric={d}, k={k}")
+
             clf = KNeighborsClassifier(n_neighbors=k, metric=d)
             clf.fit(trnX, trnY)
             prdY: array = clf.predict(tstX)
             eval: float = CLASS_EVAL_METRICS[metric](tstY, prdY)
             y_tst_values.append(eval)
+
             if eval - best_performance > DELTA_IMPROVE:
-                best_performance: float = eval
+                best_performance = eval
                 best_params['params'] = (k, d)
                 best_model = clf
-            # print(f'KNN {d} k={k}')
+                if verbose:
+                    print(f"    -> new best {metric}={eval:.4f}")
+
         values[d] = y_tst_values
+
     print(f'KNN best with k={best_params["params"][0]} and {best_params["params"][1]}')
-    plot_multiline_chart(kvalues, values, title=f'KNN Models ({metric})', xlabel='k', ylabel=metric, percentage=True)
+    plot_multiline_chart(
+        kvalues, values,
+        title=f'KNN Models ({metric})',
+        xlabel='k', ylabel=metric, percentage=True
+    )
 
     return best_model, best_params
 
@@ -195,6 +215,7 @@ def mlp_study(
     tstY: array,
     nr_max_iterations: int = 2500,
     lag: int = 500,
+    verbose: bool = False,
     metric: str = "accuracy",
 ) -> tuple[MLPClassifier | None, dict]:
     nr_iterations: list[int] = [lag] + [
@@ -230,7 +251,7 @@ def mlp_study(
                     warm_start=warm_start,
                     activation="logistic",
                     solver="sgd",
-                    verbose=False,
+                    verbose=verbose,
                 )
                 clf.fit(trnX, trnY)
                 prdY: array = clf.predict(tstX)
@@ -265,6 +286,7 @@ def mlp_study_tuned_for_flight(
     tstY: array,
     nr_max_iterations: int = 2500,
     lag: int = 500,
+    verbose: bool = False,
     metric: str = "recall",
 ) -> tuple[MLPClassifier | None, dict]:
     nr_iterations: list[int] = [lag] + [
@@ -306,7 +328,7 @@ def mlp_study_tuned_for_flight(
                     warm_start=warm_start,
                     activation="logistic",
                     solver="sgd",
-                    verbose=True,
+                    verbose=verbose,
                 )
                 clf.fit(trnX, trnY)
                 prdY: array = clf.predict(tstX)
@@ -633,7 +655,8 @@ def best_model_knn(
     approach: str,
     k_max: int = 25,
     lag: int = 2,
-    eval_metric: str = "accuracy"
+    eval_metric: str = "accuracy",
+    verbose: bool = False,
 ) :
     figure()
     knn_best_model, knn_params = knn_study(
@@ -644,6 +667,7 @@ def best_model_knn(
         k_max,
         lag,
         metric=eval_metric,
+        verbose=verbose,
     )
     savefig(f'{get_path_aux(lab_folder)}/charts/{lab_folder}/{file_tag}_{approach}_{knn_params["name"]}_{knn_params["metric"]}_study.png', bbox_inches='tight')
     show()     
@@ -698,15 +722,19 @@ def run_all_knn(features_train: ndarray,
     approach: str,
     k_max: int,
     lag: int,
-    eval_metric: str
+    eval_metric: str,
+    verbose: bool = False,
 ):  
     best_model, params = best_model_knn(
         features_train, target_train, features_test, target_test, 
         lab_folder, file_tag, approach,
         k_max=k_max,
         lag=lag,
-        eval_metric = eval_metric
+        eval_metric = eval_metric,
+        verbose=verbose,
     )
+    if verbose:
+        print("\nRunning KNN overfitting study...")
     knn_overfitting(features_train, target_train, features_test, target_test, 
         params, lab_folder, file_tag, approach,
         k_max=k_max,
@@ -1065,7 +1093,8 @@ def run_all_mlp(features_train: ndarray,
     nr_max_iterations: int,
     lag: int,
     eval_metric: str,
-    flight: bool = False
+    flight: bool = False,
+    verbose: bool = False
 ):  
     figure()
     if flight:
@@ -1077,6 +1106,7 @@ def run_all_mlp(features_train: ndarray,
             nr_max_iterations=nr_max_iterations,
             lag=lag,
             metric=eval_metric,
+            verbose=True,
         )
     else:
         best_model, params = mlp_study(
@@ -1087,6 +1117,7 @@ def run_all_mlp(features_train: ndarray,
             nr_max_iterations=nr_max_iterations,
             lag=lag,
             metric=eval_metric,
+            verbose=verbose,
         )
     savefig(f'{get_path_aux(lab_folder)}/charts/{lab_folder}/{file_tag}_{approach}_{params["name"]}_{params["metric"]}_study.png', bbox_inches='tight')
     show()
