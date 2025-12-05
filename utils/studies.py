@@ -423,6 +423,7 @@ def gradient_boosting_study(
     nr_max_trees: int = 2500,
     lag: int = 500,
     metric: str = "accuracy",
+    verbose: bool = False,              # 👈 NEW
 ) -> tuple[GradientBoostingClassifier | None, dict]:
     n_estimators: list[int] = [100] + [i for i in range(500, nr_max_trees + 1, lag)]
     max_depths: list[int] = [2, 5, 7]
@@ -435,25 +436,47 @@ def gradient_boosting_study(
     values: dict = {}
     cols: int = len(max_depths)
     _, axs = subplots(1, cols, figsize=(cols * HEIGHT, HEIGHT), squeeze=False)
+
+    # progress bookkeeping
+    total_configs = len(max_depths) * len(learning_rates) * len(n_estimators)
+    current_config = 0
+
     for i in range(len(max_depths)):
         d: int = max_depths[i]
         values = {}
         for lr in learning_rates:
             y_tst_values: list[float] = []
             for n in n_estimators:
+                current_config += 1
+                if verbose:
+                    print(
+                        f"[{current_config}/{total_configs}] "
+                        f"GB: max_depth={d}, lr={lr}, n_estimators={n}"
+                    )
+
                 clf = GradientBoostingClassifier(
-                    n_estimators=n, max_depth=d, learning_rate=lr
+                    n_estimators=n,
+                    max_depth=d,
+                    learning_rate=lr,
+                    verbose=int(verbose),   # 👈 optional: sklearn’s own logs
                 )
                 clf.fit(trnX, trnY)
                 prdY: array = clf.predict(tstX)
                 eval: float = CLASS_EVAL_METRICS[metric](tstY, prdY)
                 y_tst_values.append(eval)
+
                 if eval - best_performance > DELTA_IMPROVE:
                     best_performance = eval
                     best_params["params"] = (d, lr, n)
                     best_model = clf
-                # print(f'GB d={d} lr={lr} n={n}')
+                    if verbose:
+                        print(
+                            f"    -> new best {metric}={eval:.4f} "
+                            f"(depth={d}, lr={lr}, n={n})"
+                        )
+
             values[lr] = y_tst_values
+
         plot_multiline_chart(
             n_estimators,
             values,
@@ -463,8 +486,10 @@ def gradient_boosting_study(
             ylabel=metric,
             percentage=True,
         )
+
     print(
-        f'GB best for {best_params["params"][2]} trees (d={best_params["params"][0]} and lr={best_params["params"][1]}'
+        f'GB best for {best_params["params"][2]} trees '
+        f'(d={best_params["params"][0]} and lr={best_params["params"][1]}'
     )
 
     return best_model, best_params
@@ -1339,7 +1364,8 @@ def show_importances_gb(
     savefig(f'{get_path_aux(lab_folder)}/charts/{lab_folder}/{file_tag}_{approach}_{params["name"]}_{params["metric"]}_vars_ranking.png', bbox_inches='tight')
     show()
 
-def run_all_gb(features_train: ndarray,
+def run_all_gb(
+    features_train: ndarray,
     target_train: array,
     features_test: ndarray,
     target_test: array,
@@ -1348,7 +1374,8 @@ def run_all_gb(features_train: ndarray,
     approach: str,
     nr_max_trees: int,
     lag: int,
-    eval_metric: str
+    eval_metric: str,
+    verbose: bool = False,
 ):  
     figure()
     best_model, params = gradient_boosting_study(
@@ -1359,17 +1386,25 @@ def run_all_gb(features_train: ndarray,
         nr_max_trees=nr_max_trees,
         lag=lag,
         metric=eval_metric,
+        verbose=verbose,   
     )
-    savefig(f'{get_path_aux(lab_folder)}/charts/{lab_folder}/{file_tag}_{approach}_{params["name"]}_{params["metric"]}_study.png', bbox_inches='tight')
+    savefig(
+        f'{get_path_aux(lab_folder)}/charts/{lab_folder}/{file_tag}_{approach}_{params["name"]}_{params["metric"]}_study.png',
+        bbox_inches='tight'
+    )
     show()
     
-    gb_overfitting(features_train, target_train, features_test, target_test, 
+    gb_overfitting(
+        features_train, target_train,
+        features_test, target_test, 
         params, lab_folder, file_tag, approach,
         nr_max_trees=nr_max_trees,
         lag=lag,
-        eval_metric = eval_metric
+        eval_metric=eval_metric,
     )
 
-    predict_and_eval(features_train, target_train, features_test, target_test, 
-        best_model, params, lab_folder, file_tag, approach)
+    predict_and_eval(
+        features_train, target_train, features_test, target_test, 
+        best_model, params, lab_folder, file_tag, approach
+    )
     return best_model, params  
