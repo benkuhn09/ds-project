@@ -803,8 +803,9 @@ def plot_components(
     title: str = "",
     x_label: str = "time",
     y_label: str = "",
+    period: int | None = None,
 ) -> list[Axes]:
-    decomposition: DecomposeResult = seasonal_decompose(series, model="add")
+    decomposition: DecomposeResult = seasonal_decompose(series, model="add", period=period)
     components: dict = {
         "observed": series,
         "trend": decomposition.trend,
