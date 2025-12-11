@@ -28,6 +28,7 @@ from sklearn.metrics import f1_score
 from sklearn.metrics import confusion_matrix, RocCurveDisplay, roc_auc_score
 from sklearn.naive_bayes import _BaseNB, GaussianNB, MultinomialNB, BernoulliNB
 from sklearn.neighbors import KNeighborsClassifier
+from sklearn.base import RegressorMixin
 
 from config import (
     ACTIVE_COLORS,
@@ -847,8 +848,8 @@ def ts_aggregation_by(
 def series_train_test_split(data: Series, trn_pct: float = 0.90) -> tuple[Series, Series]:
     trn_size: int = int(len(data) * trn_pct)
     df_cp: Series = data.copy()
-    train: Series = df_cp.iloc[:trn_size, 0]
-    test: Series = df_cp.iloc[trn_size:, 0]
+    train: Series = df_cp.iloc[:trn_size]
+    test: Series = df_cp.iloc[trn_size:]
     return train, test
 
 def dataframe_temporal_train_test_split(data: DataFrame, trn_pct: float = 0.90) -> tuple[DataFrame, DataFrame]:
@@ -912,3 +913,43 @@ def plot_forecasting_eval(trn: Series, tst: Series, prd_trn: Series, prd_tst: Se
 
     return axs
 
+class PersistenceOptimistRegressor(RegressorMixin):
+    def __init__(self):
+        super().__init__()
+        self.last: float = 0.0
+        return
+
+    def fit(self, X: Series):
+        self.last = X.iloc[-1]
+        # print(self.last)
+        return
+
+    def predict(self, X: Series):
+        prd: list = X.shift().values.ravel()
+        prd[0] = self.last
+        prd_series: Series = Series(prd)
+        prd_series.index = X.index
+        return prd_series
+
+
+class PersistenceRealistRegressor(RegressorMixin):
+    def __init__(self):
+        super().__init__()
+        self.last = 0
+        self.estimations = [0]
+        self.obs_len = 0
+
+    def fit(self, X: Series):
+        for i in range(1, len(X)):
+            self.estimations.append(X.iloc[i - 1])
+        self.obs_len = len(self.estimations)
+        self.last = X.iloc[len(X) - 1]
+        prd_series: Series = Series(self.estimations)
+        prd_series.index = X.index
+        return prd_series
+
+    def predict(self, X: Series):
+        prd: list = len(X) * [self.last]
+        prd_series: Series = Series(prd)
+        prd_series.index = X.index
+        return prd_series
