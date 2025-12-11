@@ -5,7 +5,7 @@ import numpy as np
 from numpy import array, ndarray, argsort, arange, std
 from matplotlib.pyplot import subplots
 from matplotlib.pyplot import figure, savefig, show, subplots
-from pandas import DataFrame
+from pandas import DataFrame, concat
 from sklearn.discriminant_analysis import StandardScaler
 from sklearn.ensemble import GradientBoostingClassifier
 from sklearn.ensemble import RandomForestClassifier
@@ -21,9 +21,9 @@ from math import sqrt
 
 from dslabs_functions import \
     CLASS_EVAL_METRICS, DELTA_IMPROVE, plot_bar_chart, plot_multiline_chart, \
-    HEIGHT, run_NB, run_KNN, plot_multibar_chart, plot_line_chart, \
+    HEIGHT, run_NB, run_KNN, evaluate_approach, plot_multibar_chart, plot_line_chart, \
     plot_confusion_matrix, plot_evaluation_results, plot_horizontal_bar_chart, \
-    FORECAST_MEASURES, adfuller, PAST_COLOR, FUTURE_COLOR, PRED_PAST_COLOR, \
+    FORECAST_MEASURES, PAST_COLOR, FUTURE_COLOR, PRED_PAST_COLOR, \
     PRED_FUTURE_COLOR, set_chart_labels, DecomposeResult, seasonal_decompose
 
 def naive_Bayes_study(
@@ -502,23 +502,67 @@ def gradient_boosting_study(
 
     return best_model, best_params
 
-def separate_train_test(
-    data: DataFrame, 
+def get_path_aux(lab_folder: str):
+    if "lab3" in lab_folder:
+        return "../.."
+    elif "lab1" in lab_folder or "lab4" in lab_folder:
+        return ".."
+
+def save_train_test(
+    df: DataFrame, 
     target: str, 
+    lab_folder: str,
+    file_tag: str,
+    approach: str,
     test_size: float = 0.3,
     random_state: int = 42
 ):
-    df = data.copy()
+    data = df.copy()
+    labels: list = list(data[target].unique())
+    labels.sort()
+
+    positive: int = 1
+    negative: int = 0
     
-    y = df.pop(target).values
-    X = df.values
+    values: dict[str, list[int]] = {
+        "Original": [
+            len(data[data[target] == negative]),
+            len(data[data[target] == positive]),
+        ]
+    }
+
+    y = data.pop(target).values
+    X = data.values
     
     # Split the data
     trnX, tstX, trnY, tstY = train_test_split(
         X, y, test_size=test_size, random_state=random_state, stratify=y
     )
     
-    return trnX, tstX, trnY, tstY
+    train: DataFrame = concat(
+        [DataFrame(trnX, columns=data.columns), DataFrame(trnY, columns=[target])], axis=1
+    )
+    train.to_csv(f'{get_path_aux(lab_folder)}/data/prepared/{file_tag}_{approach}_train.csv', index=False)
+
+    test: DataFrame = concat(
+        [DataFrame(tstX, columns=data.columns), DataFrame(tstY, columns=[target])], axis=1
+    )
+    test.to_csv(f'{get_path_aux(lab_folder)}/data/prepared/{file_tag}_{approach}_test.csv', index=False)
+
+    values["Train"] = [
+        len(train[train[target] == negative]),
+        len(train[train[target] == positive]),
+    ]
+    values["Test"] = [
+        len(test[test[target] == negative]),
+        len(test[test[target] == positive]),
+    ]
+
+    figure(figsize=(6, 4))
+    plot_multibar_chart(labels, values, title="Data distribution per dataset")
+    show()
+    return train, test, labels
+
 
 # Made for flight dataset where shuffling is not desired
 def separate_train_test_no_shuffle(
@@ -538,36 +582,9 @@ def separate_train_test_no_shuffle(
     
     return trnX, tstX, trnY, tstY
 
-def evaluate_approach(
-    data: DataFrame, 
-    target: str = "class", 
-    metric: str = "recall",
-    test_size: float = 0.3,
-    random_state: int = 42
-) -> dict[str, list]:
-    df = data.copy()
-    
-    y = df.pop(target).values
-    X = df.values
-    
-    # Split the data
-    trnX, tstX, trnY, tstY = train_test_split(
-        X, y, test_size=test_size, random_state=random_state, stratify=y
-    )
-    
-    eval: dict[str, list] = {}
-
-    eval_NB: dict[str, float] = run_NB(trnX, trnY, tstX, tstY, metric=metric)
-    eval_KNN: dict[str, float] = run_KNN(trnX, trnY, tstX, tstY, metric=metric)
-    
-    if eval_NB != {} and eval_KNN != {}:
-        for met in CLASS_EVAL_METRICS:
-            eval[met] = [eval_NB[met], eval_KNN[met]]
-        eval["confusion_matrix"] = [eval_NB["confusion_matrix"], eval_KNN["confusion_matrix"]]
-    
-    return eval
 
 # Made for flight dataset where shuffling is not desired
+# should use the one above, delete it
 def evaluate_approach_no_shuffle(
     data: DataFrame, 
     target: str = "class", 
@@ -597,15 +614,20 @@ def evaluate_approach_no_shuffle(
     return eval
 
 def evaluate_and_plot(
-    df: DataFrame,
+    train_df: DataFrame, 
+    test_df: DataFrame,
+    labels,
     lab_folder: str,
     file_tag: str,
     approach: str,
     target_name: str = "class",
     metric: str = "recall"
 ) -> None:
+    train = train_df.copy()
+    test = test_df.copy()
+    
     figure()
-    eval: dict[str, list] = evaluate_approach(data=df, target=target_name, metric=metric)
+    eval: dict[str, list] = evaluate_approach(train=train, test=test, target=target_name, metric=metric)
     plot_multibar_chart(
         ["NB", "KNN"], {k: v for k, v in eval.items() if k != "confusion_matrix"}, title=f"{file_tag}-{approach} evaluation", percentage=True
     )
@@ -613,20 +635,12 @@ def evaluate_and_plot(
     show()
 
     fig, axs = subplots(1, 2, figsize=(2 * HEIGHT, HEIGHT))
-    labels = df[target_name].unique()
-    labels.sort()
     plot_confusion_matrix(eval["confusion_matrix"][0], labels, ax=axs[0])
     axs[0].set_title(f"{file_tag}-{approach} NB Confusion Matrix")
     plot_confusion_matrix(eval["confusion_matrix"][1], labels, ax=axs[1])
     axs[1].set_title(f"{file_tag}-{approach} KNN Confusion Matrix")
     savefig(f"../../charts/{lab_folder}/{file_tag}_{approach}_nb_vs_knn_confusion_matrix.png", bbox_inches='tight')
     show()
-
-def get_path_aux(lab_folder: str):
-    if "lab3" in lab_folder:
-        return "../.."
-    elif "lab1" in lab_folder or "lab4" in lab_folder:
-        return ".."
 
 def predict_and_eval(features_train: ndarray,
     target_train: array,
@@ -653,6 +667,8 @@ def predict_and_eval(features_train: ndarray,
     )
     savefig(f'{get_path_aux(lab_folder)}/charts/{lab_folder}/{file_tag}_{approach}_{params["name"]}_best_{params["metric"]}_eval.png', bbox_inches='tight')
     show()
+
+### Classification strategies
 
 def run_all_nb(features_train: ndarray,
     target_train: array,
@@ -1416,6 +1432,8 @@ def run_all_gb(
         best_model, params, lab_folder, file_tag, approach
     )
     return best_model, params  
+
+### Time series
 
 def plot_ts_multivariate_chart(data: DataFrame, title: str) -> list[Axes]:
     fig: Figure
