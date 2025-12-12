@@ -29,6 +29,7 @@ from sklearn.metrics import confusion_matrix, RocCurveDisplay, roc_auc_score
 from sklearn.naive_bayes import _BaseNB, GaussianNB, MultinomialNB, BernoulliNB
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.base import RegressorMixin
+from sklearn.preprocessing import StandardScaler
 
 from config import (
     ACTIVE_COLORS,
@@ -951,3 +952,10 @@ class PersistenceRealistRegressor(RegressorMixin):
         prd_series: Series = Series(prd)
         prd_series.index = X.index
         return prd_series
+
+def scale_all_dataframe(data: DataFrame) -> DataFrame:
+    vars: list[str] = data.columns.to_list()
+    transf: StandardScaler = StandardScaler().fit(data)
+    df = DataFrame(transf.transform(data), index=data.index)
+    df.columns = vars
+    return df
