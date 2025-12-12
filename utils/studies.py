@@ -616,7 +616,6 @@ def evaluate_approach_no_shuffle(
 def evaluate_and_plot(
     train_df: DataFrame, 
     test_df: DataFrame,
-    labels,
     lab_folder: str,
     file_tag: str,
     approach: str,
@@ -625,7 +624,7 @@ def evaluate_and_plot(
 ) -> None:
     train = train_df.copy()
     test = test_df.copy()
-    
+    labels = list(train[target_name].unique())
     figure()
     eval: dict[str, list] = evaluate_approach(train=train, test=test, target=target_name, metric=metric)
     plot_multibar_chart(
