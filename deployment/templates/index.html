@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🚗 Traffic Accidents Classification</title>
+    <link rel="stylesheet" href="/static/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="header-content">
+                <div class="logo">🚗💥</div>
+                <h1>Traffic Accidents Classification</h1>
+                <p class="subtitle">🔮 AI-Powered Crash Outcome Prediction</p>
+            </div>
+        </header>
+
+        <!-- Mode Selector -->
+        <div class="mode-selector">
+            <button id="btn-single" class="mode-btn active" onclick="switchMode('single')">
+                <i class="fas fa-crosshairs"></i>
+                <span>Single Prediction</span>
+            </button>
+            <button id="btn-evaluate" class="mode-btn" onclick="switchMode('evaluate')">
+                <i class="fas fa-chart-bar"></i>
+                <span>Performance Analysis</span>
+            </button>
+            <button id="btn-models" class="mode-btn" onclick="switchMode('models')">
+                <i class="fas fa-robot"></i>
+                <span>Models Info</span>
+            </button>
+        </div>
+
+        <!-- Single Prediction Mode -->
+        <div id="single-mode" class="mode-panel active">
+            <div class="panel-header">
+                <h2><i class="fas fa-magic"></i> Predict Crash Outcome</h2>
+                <p>Enter crash details to predict severity 🎯</p>
+            </div>
+
+            <form id="prediction-form">
+                <!-- Model Selection Row -->
+                <div class="form-card model-selector-card">
+                    <div class="card-header">
+                        <i class="fas fa-brain"></i>
+                        <h3>Select AI Model</h3>
+                    </div>
+                    <div class="model-select-wrapper">
+                        <select id="model-select" name="model">
+                            <option value="">🏆 Default (Best Model)</option>
+                        </select>
+                        <div class="model-badge" id="selected-model-badge">
+                            <i class="fas fa-star"></i> <span>Gradient Boosting</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Main Grid Layout -->
+                <div class="form-grid">
+                    <!-- Time & Date Section -->
+                    <div class="form-card">
+                        <div class="card-header">
+                            <i class="fas fa-clock"></i>
+                            <h3>Time & Date</h3>
+                        </div>
+                        <div class="slider-group">
+                            <label>
+                                <span class="label-text">🕐 Hour of Day</span>
+                                <span class="slider-value" id="crash_hour_value">12:00</span>
+                            </label>
+                            <input type="range" id="crash_hour" name="crash_hour" min="0" max="1" step="0.042" value="0.5" oninput="updateSliderDisplay('crash_hour')">
+                            <div class="slider-labels"><span>🌙 0:00</span><span>☀️ 12:00</span><span>🌙 23:00</span></div>
+                        </div>
+                        <div class="slider-group">
+                            <label>
+                                <span class="label-text">📅 Day of Week</span>
+                                <span class="slider-value" id="crash_day_of_week_value">Thu</span>
+                            </label>
+                            <input type="range" id="crash_day_of_week" name="crash_day_of_week" min="0" max="1" step="0.167" value="0.5" oninput="updateSliderDisplay('crash_day_of_week')">
+                            <div class="slider-labels"><span>Mon</span><span>Thu</span><span>Sun</span></div>
+                        </div>
+                        <div class="slider-group">
+                            <label>
+                                <span class="label-text">📆 Month</span>
+                                <span class="slider-value" id="crash_month_value">Jul</span>
+                            </label>
+                            <input type="range" id="crash_month" name="crash_month" min="0" max="1" step="0.083" value="0.5" oninput="updateSliderDisplay('crash_month')">
+                            <div class="slider-labels"><span>Jan</span><span>Jul</span><span>Dec</span></div>
+                        </div>
+                    </div>
+
+                    <!-- Crash Details Section -->
+                    <div class="form-card">
+                        <div class="card-header">
+                            <i class="fas fa-car-crash"></i>
+                            <h3>Crash Details</h3>
+                        </div>
+                        <div class="slider-group">
+                            <label>
+                                <span class="label-text">🚙 Number of Vehicles</span>
+                                <span class="slider-value" id="num_units_value">2</span>
+                            </label>
+                            <input type="range" id="num_units" name="num_units" min="0" max="1" step="0.1" value="0.3" oninput="updateSliderDisplay('num_units')">
+                            <div class="slider-labels"><span>1</span><span>3</span><span>5+</span></div>
+                        </div>
+                        <div class="slider-group">
+                            <label>
+                                <span class="label-text">💰 Damage Level</span>
+                                <span class="slider-value" id="damage_value">$500</span>
+                            </label>
+                            <input type="range" id="damage" name="damage" min="0" max="1" step="0.1" value="0.0" oninput="updateSliderDisplay('damage')">
+                            <div class="slider-labels"><span>$500</span><span>$1,500</span><span>$1,500+</span></div>
+                        </div>
+                        <div class="toggle-group">
+                            <label class="toggle-label">
+                                <span class="label-text">🚦 Intersection Related?</span>
+                                <div class="toggle-switch">
+                                    <input type="checkbox" id="intersection_related_i" name="intersection_related_i" checked>
+                                    <span class="toggle-slider"></span>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Injuries Section -->
+                    <div class="form-card">
+                        <div class="card-header">
+                            <i class="fas fa-heartbeat"></i>
+                            <h3>Injury Information</h3>
+                        </div>
+                        <div class="slider-group">
+                            <label>
+                                <span class="label-text">💀 Fatal Injuries</span>
+                                <span class="slider-value" id="injuries_fatal_value">0</span>
+                            </label>
+                            <input type="range" id="injuries_fatal" name="injuries_fatal" min="0" max="1" step="0.25" value="0" oninput="updateSliderDisplay('injuries_fatal')">
+                            <div class="slider-labels"><span>None</span><span>Some</span><span>Many</span></div>
+                        </div>
+                        <div class="slider-group">
+                            <label>
+                                <span class="label-text">🏥 Incapacitating</span>
+                                <span class="slider-value" id="injuries_incapacitating_value">0</span>
+                            </label>
+                            <input type="range" id="injuries_incapacitating" name="injuries_incapacitating" min="0" max="1" step="0.25" value="0" oninput="updateSliderDisplay('injuries_incapacitating')">
+                            <div class="slider-labels"><span>None</span><span>Some</span><span>Many</span></div>
+                        </div>
+                        <div class="slider-group">
+                            <label>
+                                <span class="label-text">✅ No Injury Indication</span>
+                                <span class="slider-value" id="injuries_no_indication_value">High</span>
+                            </label>
+                            <input type="range" id="injuries_no_indication" name="injuries_no_indication" min="0" max="1" step="0.1" value="1.0" oninput="updateSliderDisplay('injuries_no_indication')">
+                            <div class="slider-labels"><span>Low</span><span>Med</span><span>High</span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Conditions Grid -->
+                <div class="conditions-grid">
+                    <div class="condition-card">
+                        <div class="condition-icon">🚦</div>
+                        <label>Traffic Control</label>
+                        <select id="traffic_control_device" name="traffic_control_device">
+                            <option value="TRAFFIC SIGNAL">🚥 Traffic Signal</option>
+                            <option value="STOP SIGN/FLASHER">🛑 Stop Sign</option>
+                            <option value="NO CONTROLS">⚪ No Controls</option>
+                            <option value="YIELD">⚠️ Yield</option>
+                            <option value="OTHER">📍 Other</option>
+                            <option value="UNKNOWN">❓ Unknown</option>
+                        </select>
+                    </div>
+                    <div class="condition-card">
+                        <div class="condition-icon">🌤️</div>
+                        <label>Weather</label>
+                        <select id="weather_condition" name="weather_condition">
+                            <option value="CLEAR">☀️ Clear</option>
+                            <option value="CLOUDY/OVERCAST">☁️ Cloudy</option>
+                            <option value="SNOW">❄️ Snow</option>
+                            <option value="FOG/SMOKE/HAZE">🌫️ Fog</option>
+                            <option value="FREEZING RAIN/DRIZZLE">🌧️ Freezing Rain</option>
+                            <option value="SLEET/HAIL">🌨️ Sleet/Hail</option>
+                            <option value="OTHER">🌀 Other</option>
+                        </select>
+                    </div>
+                    <div class="condition-card">
+                        <div class="condition-icon">💡</div>
+                        <label>Lighting</label>
+                        <select id="lighting_condition" name="lighting_condition">
+                            <option value="DAYLIGHT">☀️ Daylight</option>
+                            <option value="DARKNESS, LIGHTED ROAD">🌃 Dark (Lit)</option>
+                            <option value="DARKNESS">🌑 Dark</option>
+                            <option value="DAWN">🌅 Dawn</option>
+                            <option value="DUSK">🌇 Dusk</option>
+                        </select>
+                    </div>
+                    <div class="condition-card">
+                        <div class="condition-icon">💥</div>
+                        <label>Crash Type</label>
+                        <select id="first_crash_type" name="first_crash_type">
+                            <option value="REAR END">🔙 Rear End</option>
+                            <option value="TURNING">↩️ Turning</option>
+                            <option value="ANGLE">📐 Angle</option>
+                            <option value="SIDESWIPE SAME DIRECTION">➡️ Sideswipe Same</option>
+                            <option value="FIXED OBJECT">🪨 Fixed Object</option>
+                            <option value="PEDESTRIAN">🚶 Pedestrian</option>
+                            <option value="HEAD ON">⚔️ Head On</option>
+                        </select>
+                    </div>
+                    <div class="condition-card">
+                        <div class="condition-icon">🛣️</div>
+                        <label>Road Type</label>
+                        <select id="trafficway_type" name="trafficway_type">
+                            <option value="NOT DIVIDED">➖ Not Divided</option>
+                            <option value="FOUR WAY">➕ Four Way</option>
+                            <option value="T-INTERSECTION">⊤ T-Intersection</option>
+                            <option value="ONE-WAY">→ One-Way</option>
+                            <option value="PARKING LOT">🅿️ Parking Lot</option>
+                            <option value="ALLEY">🏘️ Alley</option>
+                        </select>
+                    </div>
+                    <div class="condition-card">
+                        <div class="condition-icon">📍</div>
+                        <label>Alignment</label>
+                        <select id="alignment" name="alignment">
+                            <option value="STRAIGHT AND LEVEL">➡️ Straight Level</option>
+                            <option value="STRAIGHT ON GRADE">📈 Straight Grade</option>
+                            <option value="CURVE, LEVEL">↪️ Curve Level</option>
+                            <option value="CURVE ON GRADE">🔄 Curve Grade</option>
+                        </select>
+                    </div>
+                    <div class="condition-card">
+                        <div class="condition-icon">🚧</div>
+                        <label>Road Defect</label>
+                        <select id="road_defect" name="road_defect">
+                            <option value="NO DEFECTS">✅ No Defects</option>
+                            <option value="UNKNOWN">❓ Unknown</option>
+                            <option value="RUT, HOLES">🕳️ Ruts/Holes</option>
+                            <option value="WORN SURFACE">🛤️ Worn Surface</option>
+                            <option value="DEBRIS ON ROADWAY">🗑️ Debris</option>
+                        </select>
+                    </div>
+                    <div class="condition-card">
+                        <div class="condition-icon">⚠️</div>
+                        <label>Primary Cause</label>
+                        <select id="prim_contributory_cause" name="prim_contributory_cause">
+                            <option value="UNABLE TO DETERMINE">❓ Unable to Determine</option>
+                            <option value="FOLLOWING TOO CLOSELY">🚗🚗 Following Closely</option>
+                            <option value="FAILING TO YIELD RIGHT-OF-WAY">🛑 Fail to Yield</option>
+                            <option value="IMPROPER TURNING/NO SIGNAL">↩️ Improper Turn</option>
+                            <option value="DISREGARDING TRAFFIC SIGNALS">🚦 Disregard Signal</option>
+                            <option value="EXCEEDING SAFE SPEED FOR CONDITIONS">🏎️ Speeding</option>
+                            <option value="DISTRACTION - FROM INSIDE VEHICLE">📱 Distracted</option>
+                            <option value="WEATHER">🌧️ Weather</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-magic"></i> Predict Outcome
+                    </button>
+                    <button type="button" class="btn btn-secondary" onclick="resetForm()">
+                        <i class="fas fa-redo"></i> Reset
+                    </button>
+                </div>
+            </form>
+
+            <!-- Prediction Result -->
+            <div id="prediction-result" class="result-panel hidden">
+                <div id="result-content"></div>
+            </div>
+        </div>
+
+        <!-- Evaluation Mode -->
+        <div id="evaluate-mode" class="mode-panel">
+            <div class="panel-header">
+                <h2><i class="fas fa-chart-line"></i> Model Performance Analysis</h2>
+                <p>Upload validation data to compare models 📊</p>
+            </div>
+
+            <form id="evaluation-form">
+                <div class="upload-section">
+                    <div class="upload-card">
+                        <div class="upload-icon">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                        </div>
+                        <h3>📁 Upload Validation Dataset</h3>
+                        <p>Drag & drop or click to select CSV file</p>
+                        <input type="file" id="validation-file" name="file" accept=".csv" required>
+                        <div class="file-info" id="file-info">
+                            <i class="fas fa-file-csv"></i>
+                            <span>No file selected</span>
+                        </div>
+                    </div>
+
+                    <div class="models-selection-card">
+                        <h3><i class="fas fa-robot"></i> Select Models to Evaluate</h3>
+                        <div id="model-checkboxes" class="checkbox-grid">
+                            <!-- Populated by JS -->
+                        </div>
+                        <div class="selection-actions">
+                            <button type="button" class="btn btn-small" onclick="selectAllModels()">
+                                <i class="fas fa-check-double"></i> All
+                            </button>
+                            <button type="button" class="btn btn-small" onclick="deselectAllModels()">
+                                <i class="fas fa-times"></i> None
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-actions center">
+                    <button type="submit" class="btn btn-primary btn-large">
+                        <i class="fas fa-play"></i> Run Evaluation
+                    </button>
+                </div>
+            </form>
+
+            <!-- Evaluation Results -->
+            <div id="evaluation-result" class="result-panel hidden">
+                <div id="evaluation-content"></div>
+            </div>
+        </div>
+
+        <!-- Models Info Mode -->
+        <div id="models-mode" class="mode-panel">
+            <div class="panel-header">
+                <h2><i class="fas fa-robot"></i> Available AI Models</h2>
+                <p>Compare algorithms and their performance 🤖</p>
+            </div>
+            <div id="models-grid" class="models-grid">
+                <!-- Populated by JS -->
+            </div>
+        </div>
+
+        <footer>
+            <p>🎓 Data Science Project 2025 | 🚗 Traffic Accidents Classification</p>
+        </footer>
+    </div>
+
+    <script src="/static/script.js"></script>
+</body>
+</html>

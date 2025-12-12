@@ -18,7 +18,7 @@ from matplotlib.pyplot import gca, gcf, savefig, subplots, text
 from matplotlib.dates import AutoDateLocator, AutoDateFormatter
 
 # from matplotlib.dates import _reset_epoch_test_example, set_epoch
-from pandas import DataFrame, Series, Index, Period
+from pandas import DataFrame, Series, Index
 from pandas import read_csv, concat, to_numeric, to_datetime
 from pandas.api.types import is_integer_dtype, is_any_real_numeric_dtype
 from sklearn.preprocessing import OneHotEncoder
@@ -837,10 +837,8 @@ def ts_aggregation_by(
     agg_func: str = "mean",
 ) -> Series | DataFrame:
     df: Series | DataFrame = data.copy()
-    index: Index[Period] = df.index.to_period(gran_level)
-    df = df.groupby(by=index, dropna=True, sort=True).agg(agg_func)
+    df = df.resample(gran_level).agg(agg_func)
     df.index.drop_duplicates()
-    df.index = df.index.to_timestamp()
 
     return df
 

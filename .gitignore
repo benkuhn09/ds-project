@@ -9,3 +9,6 @@ main.aux
 main.log
 main.out
 **.gz
+
+# Model artifacts (regenerate with: python train_and_save_models.py)
+*.joblib

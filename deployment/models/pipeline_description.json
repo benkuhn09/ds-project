@@ -1,0 +1,65 @@
+{
+  "description": "Data preparation pipeline for traffic accidents classification",
+  "steps": [
+    {
+      "name": "Data loading",
+      "description": "Load raw CSV data"
+    },
+    {
+      "name": "Feature extraction",
+      "description": "Extract date components (crash_hour, crash_day_of_week, crash_month) from crash_date"
+    },
+    {
+      "name": "Target encoding",
+      "description": "Binary encoding of crash_type: 0='NO INJURY / DRIVE AWAY', 1='INJURY AND / OR TOW DUE TO CRASH'"
+    },
+    {
+      "name": "Missing value handling",
+      "description": "Drop columns that are entirely empty, drop rows with any missing values"
+    },
+    {
+      "name": "Categorical encoding",
+      "description": "One-hot encoding for categorical variables (traffic_control_device, weather_condition, lighting_condition, first_crash_type, trafficway_type, alignment, roadway_surface_cond, road_defect, prim_contributory_cause)"
+    },
+    {
+      "name": "Numeric scaling",
+      "description": "MinMax scaling applied to numeric features to normalize values between 0 and 1"
+    },
+    {
+      "name": "Feature selection",
+      "description": "Removed highly correlated features and features with low variance"
+    }
+  ],
+  "input_features": {
+    "numeric": [
+      "crash_date",
+      "intersection_related_i",
+      "damage",
+      "num_units",
+      "injuries_fatal",
+      "injuries_incapacitating",
+      "injuries_no_indication",
+      "crash_hour",
+      "crash_day_of_week",
+      "crash_month"
+    ],
+    "categorical": [
+      "traffic_control_device",
+      "weather_condition",
+      "lighting_condition",
+      "first_crash_type",
+      "trafficway_type",
+      "alignment",
+      "roadway_surface_cond",
+      "road_defect",
+      "prim_contributory_cause"
+    ]
+  },
+  "target": {
+    "name": "crash_type",
+    "classes": {
+      "0": "NO INJURY / DRIVE AWAY",
+      "1": "INJURY AND / OR TOW DUE TO CRASH"
+    }
+  }
+}
