@@ -970,36 +970,35 @@ def scale_all_dataframe(data: DataFrame) -> DataFrame:
 
 def exponential_smoothing_study(train: Series, test: Series, measure: str = "R2"):
     alpha_values = [i / 10 for i in range(1, 10)]
-    flag = measure == "R2" or measure == "MAPE"
+    percentage = measure in ("R2", "MAPE")
+
+    # minimize for error metrics
+    minimize = measure in ("MAPE", "MAE", "MSE", "RMSE")
+    best_performance = float("inf") if minimize else -float("inf")
+
     best_model = None
-    best_params: dict = {"name": "Exponential Smoothing", "metric": measure, "params": ()}
-    best_performance: float = -100000
-
+    best_params = {"name": "Exponential Smoothing", "metric": measure, "params": ()}
     yvalues = []
-    for alpha in alpha_values:
-        tool = SimpleExpSmoothing(train)
-        model = tool.fit(smoothing_level=alpha, optimized=False)
-        prd_tst = model.forecast(steps=len(test))
 
-        eval: float = FORECAST_MEASURES[measure](test, prd_tst)
-        # print(w, eval)
-        if eval > best_performance and abs(eval - best_performance) > DELTA_IMPROVE:
-            best_performance: float = eval
+    for alpha in alpha_values:
+        model = SimpleExpSmoothing(train).fit(smoothing_level=alpha, optimized=False)
+        prd_tst = model.forecast(steps=len(test))
+        score = FORECAST_MEASURES[measure](test, prd_tst)
+
+        improved = (score < best_performance - DELTA_IMPROVE) if minimize else (score > best_performance + DELTA_IMPROVE)
+        if improved:
+            best_performance = score
             best_params["params"] = (alpha,)
             best_model = model
-        yvalues.append(eval)
 
-    print(f"Exponential Smoothing best with alpha={best_params['params'][0]:.0f} -> {measure}={best_performance}")
-    plot_line_chart(
-        alpha_values,
-        yvalues,
-        title=f"Exponential Smoothing ({measure})",
-        xlabel="alpha",
-        ylabel=measure,
-        percentage=flag,
-    )
+        yvalues.append(score)
+
+    print(f"Exponential Smoothing best with alpha={best_params['params'][0]:.1f} -> {measure}={best_performance}")
+    plot_line_chart(alpha_values, yvalues, title=f"Exponential Smoothing ({measure})",
+                    xlabel="alpha", ylabel=measure, percentage=percentage)
 
     return best_model, best_params
+
 
 class RollingMeanRegressor(RegressorMixin):
     def __init__(self, win: int = 3):
