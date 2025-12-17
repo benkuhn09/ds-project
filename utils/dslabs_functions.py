@@ -1087,6 +1087,69 @@ def arima_study(train: Series, test: Series, measure: str = "R2"):
 
     return best_model, best_params
 
+def arima_study_inflation(train: Series, test: Series, measure: str = "R2"):
+    d_values = (0, 1, 2)
+    p_params = (0, 1, 2, 3, 4, 5, 6)
+    q_params = (0, 1, 2, 3, 4)
+
+    percentage = measure == "MAPE"
+    best_model = None
+    best_params: dict = {"name": "ARIMA", "metric": measure, "params": ()}
+
+    minimize = measure in ("MAPE", "MAE", "MSE", "RMSE")
+    best_performance: float = float("inf") if minimize else -100000
+
+    fig, axs = subplots(1, len(d_values), figsize=(len(d_values) * HEIGHT, HEIGHT))
+    if len(d_values) == 1:
+        axs = [axs]
+
+    for i in range(len(d_values)):
+        d: int = d_values[i]
+        values = {}
+        for q in q_params:
+            yvalues = []
+            for p in p_params:
+                try:
+                    arima = ARIMA(train, order=(p, d, q))
+                    model = arima.fit()
+                    prd_tst = model.forecast(steps=len(test))
+                    try:
+                        prd_tst.index = test.index
+                    except Exception:
+                        pass
+                    eval: float = FORECAST_MEASURES[measure](test, prd_tst)
+
+                    if minimize:
+                        if eval < best_performance and abs(eval - best_performance) > DELTA_IMPROVE:
+                            best_performance = eval
+                            best_params["params"] = (p, d, q)
+                            best_model = model
+                    else:
+                        if eval > best_performance and abs(eval - best_performance) > DELTA_IMPROVE:
+                            best_performance = eval
+                            best_params["params"] = (p, d, q)
+                            best_model = model
+
+                    yvalues.append(eval)
+                except Exception:
+                    yvalues.append(np.nan)
+
+            values[q] = yvalues
+
+        plot_multiline_chart(
+            p_params, values, ax=axs[i], title=f"ARIMA d={d} ({measure})", xlabel="p", ylabel=measure, percentage=percentage
+        )
+
+    if best_model is None:
+        print("ARIMA best results achieved with (p,d,q)=(?, ?, ?) ==> measure=nan")
+    else:
+        print(
+            f'ARIMA best results achieved with (p,d,q)=({best_params["params"][0]:.1f}, {best_params["params"][1]:.1f}, {best_params["params"][2]:.1f}) ==> measure={best_performance:.6f}'
+        )
+
+    return best_model, best_params
+
+
 def prepare_dataset_for_lstm(series, seq_length: int = 4):
     setX: list = []
     setY: list = []
