@@ -1,0 +1,268 @@
+\documentclass[10pt]{extarticle}
+\renewcommand{\arraystretch}{1.5}
+\renewcommand{\baselinestretch}{1.5}
+\usepackage[onehalfspacing]{setspace}
+\setlength{\parindent}{0em}
+\setlength{\parskip}{0.2em}
+\font\myfont=cmr12 at 26pt
+\usepackage{anyfontsize}
+\usepackage{tabularx}
+\usepackage{multirow}
+\pagenumbering{arabic} 
+\usepackage{soul}
+\usepackage{xcolor}
+\usepackage[T1]{fontenc}
+\renewcommand{\familydefault}{\sfdefault}
+\usepackage{blindtext}
+\usepackage{titling}
+\setlength{\droptitle}{-14em}   % This is your set screw
+\usepackage[english]{babel}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{eso-pic}
+\graphicspath{ {../images/} {../../forecasting/traffic/charts/profiling} {../../forecasting/traffic/charts/forecasting} {../../forecasting/traffic/charts/preparation/aggregation} {../../forecasting/traffic/charts/preparation/differential} {../../forecasting/traffic/charts/preparation/smoothing} {../../forecasting/traffic/charts/preparation/scaling} {../../forecasting/inflation-rate/charts/lab5/profiling} {../../forecasting/inflation-rate/charts/lab5/preparation/aggregation} {../../forecasting/inflation-rate/charts/lab5/preparation/differential} {../../forecasting/inflation-rate/charts/lab5/preparation/smoothing} {../../forecasting/inflation-rate/charts/lab5/preparation/scaling} {../../forecasting/inflation-rate/charts/forecasting}}
+\usepackage{subcaption}
+\usepackage{geometry}
+\usepackage{hyperref}
+\usepackage[section]{placeins}
+\geometry{margin=2cm, bmargin=2cm, tmargin=3cm}
+
+\newcommand{\ctext}[3][RGB]{%
+  \begingroup
+  \definecolor{hlcolor}{#1}{#2}\sethlcolor{hlcolor}%
+  \hl{#3}%
+  \endgroup
+}
+
+
+\begin{document}
+
+
+\AddToShipoutPictureBG*{
+\AtPageUpperLeft{
+\hspace{19.5cm}
+\raisebox{-2.5cm}{\makebox[0pt][r]{\fontsize{36}{1cm}\selectfont DS 2025\par}}}}
+
+\AddToShipoutPictureBG*{
+\AtPageUpperLeft{
+\hspace{6.5cm}
+\raisebox{-3.5cm}{
+\makebox[0pt][r]{ 
+\includegraphics[scale=0.95]{tecnico_logo.jpg}\\[3cm]}}}}
+
+
+\title{{\myfont Data Science Lab 6}}  % Title
+\setlength{\droptitle}{1cm}
+
+\date{\vspace{-9ex}} % Date for the report, skipped and used to adjust height
+\maketitle % Insert the title, author and date
+\begin{center}
+    %\setlength\extrarowheight{7pt}
+    \begin{tabular}{ |l|l l|l| }
+        \hline
+        \multirow{4}{6em}{\textbf{Team nr:} 2} & \textbf{Student 1:} \r{A}mund Grimstad & \textbf{IST nr:} 1116675\\
+        & \textbf{Student 2:} Arthur de Arruda Chau & \textbf{IST nr:} 1116090 \\
+        & \textbf{Student 3:} Benjamin Raymond Kuhn & \textbf{IST nr:} 1115778 \\
+        & \textbf{Student 4:} João Rafael Freitas Lourenço & \textbf{IST nr:} 425699 \\
+        \hline
+    \end{tabular}
+\end{center}
+
+
+\begin{center}
+	\section*{\fontsize{0.75cm}{1cm}\selectfont FORECASTING MODELS}
+\end{center}
+
+
+\section*{Traffic Time Series}
+
+\subsection*{\textit{Exponential Smoothing}}
+%\ctext[RGB]{190,190,190}{May be used to identify the most atomic granularity and two other different granularities to consider.  \textbf{Shall not exceed 500 characters.}}
+
+\begin{figure}[H]
+%\centering\includegraphics[width=0.45\textwidth]{traffic_exponential_smoothing_R2_study.png}
+%\centering\includegraphics[width=0.45\textwidth]{traffic_exponential_smoothing_MAPE_study.png}
+\caption{Exponential Smoothing R2 and MAPE study for Traffic Time Series}
+\end{figure}
+
+\begin{figure}[H]
+%\centering\includegraphics[width=0.45\textwidth]{traffic_exponential_smoothing_R2_eval.png}
+%\centering\includegraphics[width=0.45\textwidth]{traffic_exponential_smoothing_MAPE_eval.png}
+\caption{Exponential Smoothing R2 and MAPE evaluation results for Traffic Time Series}
+\end{figure}
+
+\begin{figure}[H]
+%\centering\includegraphics[width=0.7\textwidth]{traffic_exponential_smoothing_R2_forecast.png}
+%\centering\includegraphics[width=0.7\textwidth]{traffic_exponential_smoothing_MAPE_forecast.png}
+\caption{Exponential Smoothing R2 and MAPE forecasting for Traffic Time Series}
+\end{figure}
+
+
+\subsection*{\textit{Multi-layer Perceptron}}
+%\ctext[RGB]{190,190,190}{Shall be used to perform the data analysis at those three different granularities, concerning the series distribution.  \textbf{Shall not exceed 500 characters.}}
+
+\begin{figure}[H]
+%\centering\includegraphics[width=0.45\textwidth]{traffic_mlp_R2_study.png}
+%\centering\includegraphics[width=0.45\textwidth]{traffic_mlp_MAPE_study.png}
+\caption{MLP R2 and MAPE study for Traffic Time Series}
+\end{figure}
+
+\begin{figure}[H]
+%\centering\includegraphics[width=0.45\textwidth]{traffic_mlp_R2_eval.png}
+%\centering\includegraphics[width=0.45\textwidth]{traffic_mlp_MAPE_eval.png}
+\caption{MLP R2 and MAPE evaluation results for Traffic Time Series}
+\end{figure}
+
+\begin{figure}[H]
+%\centering\includegraphics[width=0.7\textwidth]{traffic_mlp_R2_forecast.png}
+%\centering\includegraphics[width=0.7\textwidth]{traffic_mlp_MAPE_forecast.png}
+\caption{MLP R2 and MAPE forecasting for Traffic Time Series}
+\end{figure}
+
+
+\subsection*{\textit{ARIMA}}
+%\ctext[RGB]{190,190,190}{Shall be used to perform the data analysis at those three different granularities, concerning the series stationarity.  \textbf{Shall not exceed 300 characters.}}
+
+\begin{figure}[H]
+%\centering\includegraphics[width=0.8\textwidth]{traffic_arima_diagnostics.png}
+\caption{ARIMA diagnostics for Traffic Time Series}
+\end{figure}
+
+\begin{figure}[H]
+%\centering\includegraphics[width=0.45\textwidth]{traffic_arima_R2_study.png}
+%\centering\includegraphics[width=0.45\textwidth]{traffic_arima_MAPE_study.png}
+\caption{ARIMA R2 and MAPE study for Traffic Time Series}
+\end{figure}
+
+\begin{figure}[H]
+%\centering\includegraphics[width=0.45\textwidth]{traffic_arima_R2_eval.png}
+%\centering\includegraphics[width=0.45\textwidth]{traffic_arima_MAPE_eval.png}
+\caption{ARIMA R2 and MAPE evaluation results for Traffic Time Series}
+\end{figure}
+
+\begin{figure}[H]
+%\centering\includegraphics[width=0.7\textwidth]{traffic_arima_R2_forecast.png}
+%\centering\includegraphics[width=0.7\textwidth]{traffic_arima_MAPE_forecast.png}
+\caption{ARIMA R2 and MAPE forecasting for Traffic Time Series}
+\end{figure}
+
+
+\subsection*{\textit{LSTM}}
+%\ctext[RGB]{190,190,190}{Shall describe the results of applying three different aggregations over both datasets, and identifying the granularity chosen to proceed.  \textbf{Shall not exceed 300 characters.}}
+
+\begin{figure}[H]
+%\centering\includegraphics[width=0.45\textwidth]{traffic_lstms_R2_study.png}
+%\centering\includegraphics[width=0.45\textwidth]{traffic_lstms_MAPE_study.png}
+\caption{LSTM R2 and MAPE study for Traffic Time Series}
+\end{figure}
+
+\begin{figure}[H]
+%\centering\includegraphics[width=0.45\textwidth]{traffic_lstms_R2_eval.png}
+%\centering\includegraphics[width=0.45\textwidth]{traffic_lstms_MAPE_eval.png}
+\caption{LSTM R2 and MAPE evaluation results for Traffic Time Series}
+\end{figure}
+
+\begin{figure}[H]
+%\centering\includegraphics[width=0.7\textwidth]{traffic_lstms_R2_forecast.png}
+%\centering\includegraphics[width=0.7\textwidth]{traffic_lstms_MAPE_forecast.png}
+\caption{LSTM R2 and MAPE forecasting for Traffic Time Series}
+\end{figure}
+
+
+
+
+
+\section*{Inflation Rate Time Series}
+
+\subsection*{\textit{Exponential Smoothing}}
+%\ctext[RGB]{190,190,190}{May be used to identify the most atomic granularity and two other different granularities to consider.  \textbf{Shall not exceed 500 characters.}}
+
+\begin{figure}[H]
+\centering\includegraphics[width=0.45\textwidth]{inflation_exponential_smoothing_RMSE_study.png}
+\centering\includegraphics[width=0.45\textwidth]{inflation_exponential_smoothing_MAE_study.png}
+\caption{Exponential Smoothing RMSE and MAE study for Inflation Rate Time Series}
+\end{figure}
+
+\begin{figure}[H]
+\centering\includegraphics[width=0.45\textwidth]{inflation_exponential_smoothing_RMSE_eval.png}
+\centering\includegraphics[width=0.45\textwidth]{inflation_exponential_smoothing_MAE_eval.png}
+\caption{Exponential Smoothing RMSE and MAE evaluation results for Inflation Rate Time Series}
+\end{figure}
+
+\begin{figure}[H]
+\centering\includegraphics[width=0.7\textwidth]{inflation_exponential_smoothing_RMSE_forecast.png}
+\centering\includegraphics[width=0.7\textwidth]{inflation_exponential_smoothing_MAE_forecast.png}
+\caption{Exponential Smoothing RMSE and MAE forecasting for Inflation Rate Time Series}
+\end{figure}
+
+\subsection*{\textit{Multi-layer Perceptron}}
+%\ctext[RGB]{190,190,190}{Shall be used to perform the data analysis at those three different granularities, concerning the series distribution.  \textbf{Shall not exceed 500 characters.}}
+
+\begin{figure}[H]
+%\centering\includegraphics[width=0.45\textwidth]{inflation_mlp_RMSE_study.png}
+%\centering\includegraphics[width=0.45\textwidth]{inflation_mlp_MAE_study.png}
+\caption{MLP RMSE and MAE study for Inflation Rate Time Series}
+\end{figure}
+
+\begin{figure}[H]
+%\centering\includegraphics[width=0.45\textwidth]{inflation_mlp_RMSE_eval.png}
+%\centering\includegraphics[width=0.45\textwidth]{inflation_mlp_MAE_eval.png}
+\caption{MLP RMSE and MAE evaluation results for Inflation Rate Time Series}
+\end{figure}
+
+\begin{figure}[H]
+%\centering\includegraphics[width=0.7\textwidth]{inflation_mlp_RMSE_forecast.png}
+%\centering\includegraphics[width=0.7\textwidth]{inflation_mlp_MAE_forecast.png}
+\caption{MLP RMSE and MAE forecasting for Inflation Rate Time Series}
+\end{figure}
+
+\subsection*{\textit{ARIMA}}
+%\ctext[RGB]{190,190,190}{Shall be used to perform the data analysis at those three different granularities, concerning the series stationarity.  \textbf{Shall not exceed 300 characters.}}
+
+\begin{figure}[H]
+\centering\includegraphics[width=0.8\textwidth]{inflation_arima_diagnostics.png}
+\caption{ARIMA diagnostics for Inflation Rate Time Series}
+\end{figure}
+
+\begin{figure}[H]
+\centering\includegraphics[width=0.45\textwidth]{inflation_arima_RMSE_study.png}
+\centering\includegraphics[width=0.45\textwidth]{inflation_arima_MAE_study.png}
+\caption{ARIMA RMSE and MAE study for Inflation Rate Time Series}
+\end{figure}
+
+\begin{figure}[H]
+\centering\includegraphics[width=0.45\textwidth]{inflation_arima_RMSE_eval.png}
+\centering\includegraphics[width=0.45\textwidth]{inflation_arima_MAE_eval.png}
+\caption{ARIMA RMSE and MAE evaluation results for Inflation Rate Time Series}
+\end{figure}
+
+\begin{figure}[H]
+\centering\includegraphics[width=0.7\textwidth]{inflation_arima_RMSE_forecast.png}
+\centering\includegraphics[width=0.7\textwidth]{inflation_arima_MAE_forecast.png}
+\caption{ARIMA RMSE and MAE forecasting for Inflation Rate Time Series}
+\end{figure}
+
+\subsection*{\textit{LSTM}}
+%\ctext[RGB]{190,190,190}{Shall describe the results of applying three different aggregations over both datasets, and identifying the granularity chosen to proceed.  \textbf{Shall not exceed 300 characters.}}
+
+\begin{figure}[H]
+\centering\includegraphics[width=0.45\textwidth]{inflation_lstms_RMSE_study.png}
+\centering\includegraphics[width=0.45\textwidth]{inflation_lstms_MAE_study.png}
+\caption{LSTM RMSE and MAE study for Inflation Rate Time Series}
+\end{figure}
+
+\begin{figure}[H]
+\centering\includegraphics[width=0.45\textwidth]{inflation_lstms_RMSE_eval.png}
+\centering\includegraphics[width=0.45\textwidth]{inflation_lstms_MAE_eval.png}
+\caption{LSTM RMSE and MAE evaluation results for Inflation Rate Time Series}
+\end{figure}
+
+\begin{figure}[H]
+\centering\includegraphics[width=0.7\textwidth]{inflation_lstms_RMSE_forecast.png}
+\centering\includegraphics[width=0.7\textwidth]{inflation_lstms_MAE_forecast.png}
+\caption{LSTM RMSE and MAE forecasting for Inflation Rate Time Series}
+\end{figure}
+
+
+
+\end{document}
