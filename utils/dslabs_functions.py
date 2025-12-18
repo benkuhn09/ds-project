@@ -1022,9 +1022,9 @@ class RollingMeanRegressor(RegressorMixin):
         prd_series.index = X.index
         return prd_series
 
-def rolling_mean_study(train: Series, test: Series, measure: str = "R2"):
+def rolling_mean_study(train: Series, test: Series, measure: str = "R2", win_size: tuple | None = None):
     # win_size = (3, 5, 10, 15, 20, 25, 30, 40, 50)
-    win_size = (12, 24, 48, 96, 192, 384, 768)
+    win_size =  (12, 24, 48, 96, 192, 384, 768) if win_size is None else win_size
     flag = measure == "R2" or measure == "MAPE"
     best_model = None
     best_params: dict = {"name": "Rolling Mean", "metric": measure, "params": ()}
@@ -1071,6 +1071,43 @@ def arima_study(train: Series, test: Series, measure: str = "R2"):
                 arima = ARIMA(train, order=(p, d, q))
                 model = arima.fit()
                 prd_tst = model.forecast(steps=len(test), signal_only=False)
+                eval: float = FORECAST_MEASURES[measure](test, prd_tst)
+                # print(f"ARIMA ({p}, {d}, {q})", eval)
+                if eval > best_performance and abs(eval - best_performance) > DELTA_IMPROVE:
+                    best_performance: float = eval
+                    best_params["params"] = (p, d, q)
+                    best_model = model
+                yvalues.append(eval)
+            values[q] = yvalues
+        plot_multiline_chart(
+            p_params, values, ax=axs[i], title=f"ARIMA d={d} ({measure})", xlabel="p", ylabel=measure, percentage=flag
+        )
+    print(
+        f'ARIMA best results achieved with (p,d,q)=({best_params["params"][0]:.0f}, {best_params["params"][1]:.0f}, {best_params["params"][2]:.0f}) ==> measure={best_performance:.2f}'
+    )
+
+    return best_model, best_params
+
+def arima_study_forecasting(train: Series, test: Series, measure: str = "R2", exog_train: DataFrame | None = None, exog_test: DataFrame | None = None):
+    d_values = (0, 1, 2)
+    p_params = (1, 2, 3, 5, 7, 10)
+    q_params = (1, 3, 5, 7)
+
+    flag = measure == "R2" or measure == "MAPE"
+    best_model = None
+    best_params: dict = {"name": "ARIMA", "metric": measure, "params": ()}
+    best_performance: float = -100000
+
+    fig, axs = subplots(1, len(d_values), figsize=(len(d_values) * HEIGHT, HEIGHT))
+    for i in range(len(d_values)):
+        d: int = d_values[i]
+        values = {}
+        for q in q_params:
+            yvalues = []
+            for p in p_params:
+                arima = ARIMA(train, exog=exog_train, order=(p, d, q))
+                model = arima.fit()
+                prd_tst = model.forecast(steps=len(test), exog=exog_test, signal_only=False)
                 eval: float = FORECAST_MEASURES[measure](test, prd_tst)
                 # print(f"ARIMA ({p}, {d}, {q})", eval)
                 if eval > best_performance and abs(eval - best_performance) > DELTA_IMPROVE:
@@ -1344,5 +1381,154 @@ def lstm_study_inflation(train, test, nr_episodes: int = 1000, measure: str = "R
 
     print(
         f'LSTM best results achieved with length={best_params["params"][0]} hidden_units={best_params["params"][1]} and nr_episodes={best_params["params"][2]}) ==> measure={best_performance:.6f}'
+    )
+    return best_model, best_params
+
+
+# ---------------------------------------
+#      MULTIVARIATE LSTM WITH EXOG
+# ---------------------------------------
+
+def prepare_multivariate_dataset_for_lstm(data: DataFrame, target_col: str, seq_length: int = 4):
+    """
+    Prepare multivariate dataset for LSTM with exogenous variables.
+
+    Parameters:
+    - data: DataFrame with target and exogenous features
+    - target_col: name of target column
+    - seq_length: sequence length for LSTM
+
+    Returns:
+    - X: tensor of shape (samples, seq_length, n_features)
+    - Y: tensor of shape (samples, 1) - next target value
+    """
+    setX: list = []
+    setY: list = []
+
+    for i in range(len(data) - seq_length):
+        # Get all features for the sequence window
+        past = data.iloc[i : i + seq_length].values
+        # Get next target value
+        future = data[target_col].iloc[i + seq_length]
+        setX.append(past)
+        setY.append([future])
+
+    X = tensor(setX).float()
+    Y = tensor(setY).float()
+    return X, Y
+
+
+class DS_LSTM_Multivariate(Module):
+    """LSTM that accepts multiple input features (target + exogenous variables)"""
+
+    def __init__(self, train_data: DataFrame, target_col: str, input_size: int, hidden_size: int = 50, num_layers: int = 1, length: int = 4):
+        super().__init__()
+        self.target_col = target_col
+        self.length = length
+        self.lstm = LSTM(input_size=input_size, hidden_size=hidden_size, num_layers=num_layers, batch_first=True)
+        self.linear = Linear(hidden_size, 1)
+        self.optimizer = Adam(self.parameters())
+        self.loss_fn = MSELoss()
+
+        trnX, trnY = prepare_multivariate_dataset_for_lstm(train_data, target_col, seq_length=length)
+        self.loader = DataLoader(TensorDataset(trnX, trnY), shuffle=True, batch_size=max(1, len(train_data) // 10))
+
+    def forward(self, x):
+        x, _ = self.lstm(x)
+        # Use only the last timestep's hidden state
+        x = self.linear(x[:, -1, :])
+        return x
+
+    def fit(self):
+        self.train()
+        for batchX, batchY in self.loader:
+            y_pred = self(batchX)
+            loss = self.loss_fn(y_pred, batchY)
+            self.optimizer.zero_grad()
+            loss.backward()
+            self.optimizer.step()
+        return loss
+
+    def predict(self, X):
+        self.eval()
+        with no_grad():
+            y_pred = self(X)
+        return y_pred
+
+
+def lstm_study_multivariate(train_data: DataFrame, test_data: DataFrame, target_col: str, nr_episodes: int = 1000, measure: str = "R2"):
+    """
+    Study LSTM with multivariate input (target + exogenous features).
+
+    Parameters:
+    - train_data: DataFrame with all features (target + exog)
+    - test_data: DataFrame with all features (target + exog)
+    - target_col: name of the target column
+    - nr_episodes: number of training episodes
+    - measure: evaluation metric ('R2' or 'MAPE')
+    """
+    sequence_size = [2, 4, 8]
+    nr_hidden_units = [25, 50, 100]
+
+    step: int = nr_episodes // 10
+    episodes = [1] + list(range(0, nr_episodes + 1, step))[1:]
+    percentage = measure == "MAPE"
+
+    minimize = measure in ("MAPE", "MAE", "MSE", "RMSE")
+    best_model = None
+    best_params: dict = {"name": "LSTM_Multivariate", "metric": measure, "params": ()}
+    best_performance: float = float("inf") if minimize else -100000
+
+    n_features = train_data.shape[1]  # number of features (target + exog)
+
+    _, axs = subplots(1, len(sequence_size), figsize=(len(sequence_size) * HEIGHT, HEIGHT))
+    if len(sequence_size) == 1:
+        axs = [axs]
+
+    train_target = train_data[target_col].astype("float32")
+    test_target = test_data[target_col].astype("float32")
+
+    for i in range(len(sequence_size)):
+        length = sequence_size[i]
+        tstX, tstY = prepare_multivariate_dataset_for_lstm(test_data, target_col, seq_length=length)
+
+        values = {}
+        for hidden in nr_hidden_units:
+            yvalues = []
+            model = DS_LSTM_Multivariate(train_data, target_col, input_size=n_features, hidden_size=hidden, length=length)
+
+            for n in range(0, nr_episodes + 1):
+                model.fit()
+                if n % step == 0:
+                    prd_tst = model.predict(tstX).detach().cpu().numpy().ravel()
+                    eval_score: float = FORECAST_MEASURES[measure](test_target[length:], prd_tst)
+                    print(f"seq length={length} hidden_units={hidden} nr_episodes={n} n_features={n_features}", eval_score)
+
+                    if minimize:
+                        if eval_score < best_performance and abs(eval_score - best_performance) > DELTA_IMPROVE:
+                            best_performance = eval_score
+                            best_params["params"] = (length, hidden, n)
+                            best_model = deepcopy(model)
+                    else:
+                        if eval_score > best_performance and abs(eval_score - best_performance) > DELTA_IMPROVE:
+                            best_performance = eval_score
+                            best_params["params"] = (length, hidden, n)
+                            best_model = deepcopy(model)
+
+                    yvalues.append(eval_score)
+            values[hidden] = yvalues
+
+        plot_multiline_chart(
+            episodes,
+            values,
+            ax=axs[i],
+            title=f"LSTM Multivariate seq length={length} ({measure})",
+            xlabel="nr episodes",
+            ylabel=measure,
+            percentage=percentage,
+        )
+
+    print(
+        f'LSTM Multivariate best results achieved with length={best_params["params"][0]} hidden_units={best_params["params"][1]} and nr_episodes={best_params["params"][2]}) ==> measure={best_performance:.6f}'
     )
     return best_model, best_params
