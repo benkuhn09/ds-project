@@ -229,22 +229,20 @@
 \subsection*{\textit{Multi-layer Perceptron}}
 %\ctext[RGB]{190,190,190}{Shall be used to perform the data analysis at those three different granularities, concerning the series distribution.  \textbf{Shall not exceed 500 characters.}}
 
+Used a lag of k=4 (years)
 \begin{figure}[H]
-%\centering\includegraphics[width=0.45\textwidth]{inflation_mlp_RMSE_study.png}
-%\centering\includegraphics[width=0.45\textwidth]{inflation_mlp_MAE_study.png}
-\caption{MLP RMSE and MAE study for Inflation Rate Time Series}
+\centering\includegraphics[width=0.7\textwidth]{inflation_mlp_study.png}
+\caption{MLP RMSE, MAE and R2 study for Inflation Rate Time Series}
 \end{figure}
 
 \begin{figure}[H]
-%\centering\includegraphics[width=0.45\textwidth]{inflation_mlp_RMSE_eval.png}
-%\centering\includegraphics[width=0.45\textwidth]{inflation_mlp_MAE_eval.png}
-\caption{MLP RMSE and MAE evaluation results for Inflation Rate Time Series}
+\centering\includegraphics[width=0.7\textwidth]{inflation_mlp_eval.png}
+\caption{MLP R2 evaluation results for Inflation Rate Time Series}
 \end{figure}
 
 \begin{figure}[H]
-%\centering\includegraphics[width=0.7\textwidth]{inflation_mlp_RMSE_forecast.png}
-%\centering\includegraphics[width=0.7\textwidth]{inflation_mlp_MAE_forecast.png}
-\caption{MLP RMSE and MAE forecasting for Inflation Rate Time Series}
+\centering\includegraphics[width=0.7\textwidth]{inflation_mlp_forecast.png}
+\caption{MLP Best model (based on R2) forecasting for Inflation Rate Time Series}
 \end{figure}
 
 \subsection*{\textit{ARIMA}}
